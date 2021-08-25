@@ -1,0 +1,20 @@
+version: "2.4"  # optional since v1.27.0
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: "${mysql_db_name}"
+      POSTGRES_USER: "${mysql_user_name}"
+      POSTGRES_PASSWORD: "${mysql_password}"
+    ports:
+      - '5432:5432'
+    expose:
+      - '5432'
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+
+
+
+  
