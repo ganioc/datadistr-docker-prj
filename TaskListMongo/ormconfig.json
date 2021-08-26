@@ -6,15 +6,16 @@
    "password": "dianke123",
    "database": "admin",
    "synchronize": true,
-   "logging": false,
+   "logging": true,
+   "useUnifiedTopology": true,
    "entities": [
-      "build/src/entity/**/*.js"
+      "build/entity/**/*.js"
    ],
    "migrations": [
-      "build/src/migration/**/*.js"
+      "src/migration/**/*.ts"
    ],
    "subscribers": [
-      "build/src/subscriber/**/*.js"
+      "src/subscriber/**/*.ts"
    ],
    "cli": {
       "entitiesDir": "src/entity",
