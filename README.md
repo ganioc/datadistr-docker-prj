@@ -1,5 +1,7 @@
 ## Services
 ### postgresPrj
+PostgresSQL 文件存储
+
 
 ```
 192.168.0.199:5432
@@ -8,6 +10,9 @@ database name: db
 ```
 
 ### TaskListMongo
+Service API
+MongoDB 状态存储
+
 
 ```
 192.168.0.199:27017
