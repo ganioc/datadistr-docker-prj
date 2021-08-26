@@ -1,0 +1,22 @@
+{
+  "name": "datadistr-docker-prj",
+  "version": "1.0.0",
+  "description": "``` 192.168.0.199:5432 user:password, john:dianke123 database name: db ```",
+  "main": "init-mongo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ganioc/datadistr-docker-prj.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ganioc/datadistr-docker-prj/issues"
+  },
+  "homepage": "https://github.com/ganioc/datadistr-docker-prj#readme",
+  "dependencies": {
+    "typeorm": "^0.2.37"
+  }
+}

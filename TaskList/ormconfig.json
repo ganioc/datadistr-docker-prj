@@ -1,0 +1,24 @@
+{
+   "type": "mongo",
+   "host": "192.168.0.199",
+   "port": 5432,
+   "username": "john",
+   "password": "dianke123",
+   "database": "db",
+   "synchronize": true,
+   "logging": false,
+   "entities": [
+      "build/entity/**/*.js"
+   ],
+   "migrations": [
+      "build/migration/**/*.js"
+   ],
+   "subscribers": [
+      "build/subscriber/**/*.js"
+   ],
+   "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   }
+}

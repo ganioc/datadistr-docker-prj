@@ -1,0 +1,19 @@
+{
+   "compilerOptions": {
+      "target": "es2016",
+      "module": "commonjs",
+      "outDir": "./build",
+      "strict": true ,
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "sourceMap": true,
+      /* Advanced Options */
+      "skipLibCheck": true /* Skip type checking of declaration files. */,
+      "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
+      "strictPropertyInitialization": false,
+      "resolveJsonModule": true
+   },
+   "include": ["./src/**/*", "./src/index.ts", "./test/**/*"]
+}
