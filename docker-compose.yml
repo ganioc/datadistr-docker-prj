@@ -2,6 +2,7 @@ version: "2.4"  # optional since v1.27.0
 services:
   postgres:
     image: postgres
+    container_name: 'postgres'
     restart: always
     environment:
       POSTGRES_DB: "${mysql_db_name}"
@@ -13,7 +14,21 @@ services:
       - '5432'
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
-
+  mongo:
+    image: mongo:4.4
+    container_name : 'mongodb'
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: "${mongo_db_name}"
+      MONGO_INITDB_ROOT_USERNAME: "${mongo_root_name}"
+      MONGO_INITDB_ROOT_PASSWORD: "${mongo_root_password}"
+    ports:
+      - '27017-27019:27017-27019'
+    expose:
+      - '27017-27019'
+    volumes:
+##      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+      - ./data/mongo:/data/db      
 
 
 
