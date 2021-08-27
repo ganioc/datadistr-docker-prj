@@ -5,7 +5,7 @@ export type TaskType =
     | 'QueryOutTask'
     | 'InsertInTask'
     | 'InsertOutTask'
-    | 'SetInTask'
-    | 'SetOutTask';
+    | 'MarkInTask'
+    | 'MarkOutTask';
 
 export type StatusOutTask = 'succeed' | 'hash-not-found';

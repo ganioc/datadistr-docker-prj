@@ -1,10 +1,10 @@
 import { StatusOutTask, TaskType } from './type';
 
-export class SetInTask {
+export class MarkInTask {
     block: number;
     txIndex: number;
 }
-export class SetOutTask {
+export class MarkOutTask {
     block: number;
     txIndex: number;
 }
@@ -54,6 +54,7 @@ export class OutTask {
 export class QueryOutTaskRsp {
     pageOffset: number;
     pageSize: number;
+    total: number;
     finished: boolean;
     all: boolean;
     data: OutTask[];
@@ -66,8 +67,8 @@ export class RpcReq {
         | null
         | InTask
         | OutTask
-        | SetInTask
-        | SetOutTask
+        | MarkInTask
+        | MarkOutTask
         | QueryInTask
         | QueryOutTask;
 }
