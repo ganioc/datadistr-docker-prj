@@ -1,9 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { handleReq } from './method/handle';
-import { GetTask, RpcReq, RpcRsp } from './model/get.dto';
-import { QueryInTask, QueryOutTask } from './model/query.dto';
-
+import { RpcReq, RpcRsp } from './model/reqrsp.dto';
 @Controller()
 export class AppController {
     constructor(private readonly appService: AppService) { }
