@@ -14,6 +14,8 @@ import { User } from "./entity/User";
 //     // let photoRepository = connection.getRepository(User);
 //     // photoRepository.save(user);
 
+
+
 //     console.log("Loading users from the database...");
 //     const users = await connection.manager.find(User);
 //     console.log("Loaded users: ", users);

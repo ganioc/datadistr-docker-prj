@@ -1,0 +1,28 @@
+{
+   "type": "mongodb",
+   "host": "192.168.0.199",
+   "port": 27017,
+   "username": "john",
+   "password": "dianke123",
+   "database": "admin",
+   "synchronize": true,
+   "logging": true,
+   "useUnifiedTopology": true,
+   "entities": [
+      "dist/entity/**/*.js"
+   ],
+   "migrations": [
+      "src/migration/**/*.ts"
+   ],
+   "subscribers": [
+      "src/subscriber/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   },
+   "extra": {
+      "authSource": "admin"
+   }
+}

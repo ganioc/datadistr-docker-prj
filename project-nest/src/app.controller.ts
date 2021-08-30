@@ -16,11 +16,11 @@ export class AppController {
         return 'intask details';
     }
 
-    @Get(':id')
-    findOne(@Param() params): string {
-        console.log(params.id);
-        return `This action returns a #${params.id} cat`;
-    }
+    // @Get(':id')
+    // findOne(@Param() params): string {
+    //     console.log(params.id);
+    //     return `This action returns a #${params.id} cat`;
+    // }
     @Post('rpc/v1/')
     async handleRpc(@Body() req: RpcReq): Promise<RpcRsp | any> {
         console.log(req);
