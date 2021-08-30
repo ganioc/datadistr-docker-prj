@@ -1,4 +1,14 @@
-import { InTask, MarkInTask, MarkOutTask, OutTask, QueryInTask, QueryOutTask, RpcReq, RpcRsp } from '../model/reqrsp.dto';
+import {
+    InTask,
+    MarkInTask,
+    MarkOutTask,
+    OutTask,
+    QueryInTask,
+    QueryOutTask,
+    RpcReq,
+    RpcRsp,
+    RpcStatusCode,
+} from '../model/reqrsp.dto';
 
 async function handleGetInTask(req: RpcReq): Promise<RpcRsp> {
     const rsp = {
@@ -22,6 +32,7 @@ async function handleGetOutTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: [
             {
                 finished: false,
@@ -43,6 +54,7 @@ async function handleQueryInTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: {
             pageOffset: data.pageOffset,
             pageSize: data.pageSize,
@@ -68,6 +80,7 @@ async function handleQueryOutTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: {
             pageOffset: data.pageOffset,
             pageSize: data.pageSize,
@@ -96,6 +109,7 @@ async function handleInsertInTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: [data],
     };
     return rsp as RpcRsp;
@@ -105,6 +119,7 @@ async function handleInsertOutTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: [data],
     };
     return rsp as RpcRsp;
@@ -114,6 +129,7 @@ async function handleMarkInTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: [
             {
                 finished: false,
@@ -132,6 +148,7 @@ async function handleMarkOutTask(req: RpcReq): Promise<RpcRsp> {
     const rsp: RpcRsp = {
         id: req.id,
         name: req.name,
+        statusCode: RpcStatusCode.OK,
         data: [
             {
                 finished: false,

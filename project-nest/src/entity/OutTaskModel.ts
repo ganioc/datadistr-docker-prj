@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('outtask')
 export class OutTaskModel {
     @PrimaryGeneratedColumn()
     id: number;

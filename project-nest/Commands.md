@@ -78,9 +78,24 @@
 
 ## Cats
 ```json
- {
+{
     "name": "Mew",
     "age": 1,
     "breed": "noble"
+}
+```
+## tasks
+
+- /tasks/intask/
+- /tasks/outtask/
+
+- post /tasks/rpc/v1/
+
+```json
+
+{
+    "id": 31,
+    "name": "GetInTask",
+    "data":{}
 }
 ```

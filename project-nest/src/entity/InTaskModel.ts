@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import 'reflect-metadata';
 
-@Entity()
+@Entity('intask')
 export class InTaskModel {
     @PrimaryGeneratedColumn()
     id: number;

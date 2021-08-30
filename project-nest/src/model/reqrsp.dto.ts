@@ -76,5 +76,12 @@ export class RpcReq {
 export class RpcRsp {
     id: number;
     name: TaskType;
+    statusCode: number;
     data: InTask[] | OutTask[] | QueryInTaskRsp | QueryOutTaskRsp;
+}
+export enum RpcStatusCode {
+    OK = 0,
+    UNKNOWN = 1,
+    WRONG_ARG = 2,
+    FAIL = 3,
 }
