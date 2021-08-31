@@ -6,6 +6,10 @@ export type TaskType =
     | 'InsertInTask'
     | 'InsertOutTask'
     | 'MarkInTask'
-    | 'MarkOutTask';
+    | 'MarkOutTask'
+    | 'GetCertainInTask'
+    | 'GetCertainOutTask'
+    | 'DeleteAllInTask'
+    | 'DeleteAllOutTask';
 
 export type StatusOutTask = 0 | 1;

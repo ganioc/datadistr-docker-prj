@@ -16,6 +16,7 @@
 
 ```
 
+## InsertInTask
 ```json
 
 {
@@ -79,6 +80,18 @@
         "hashId": "asdfsdafdsffsdasdf"
     }
 }
+{
+    "id":17,
+    "name":"InsertInTask",
+    "data":{
+        "finished": true,
+        "block": 7,
+        "txIndex": 0,
+        "address": "0xasfasdfas",
+        "pubKey": "xsdfdfdsfsad",
+        "hashId": "asdfsdafdsffsdasdf"
+    }
+}
 
 ```
 
@@ -113,6 +126,21 @@
                 "newHashId": "yyy"
             } 
 }
+{
+    "id":333,
+    "name":"InsertOutTask",
+    "data":{
+                "finished": true,
+                "block": 20,
+                "txIndex": 0,
+                "address": "0xasf",
+                "pubKey": "xsdfdf",
+                "status": "succeed",
+                "encryptSecret": "asdfsdafasdf",
+                "oldHashId": "xxx",
+                "newHashId": "yyy"
+            } 
+}
 ```
 ## GetInTask
 ```json
@@ -131,7 +159,66 @@
 }
 
 ```
+## QueryInTask
+```json
+{
+    "id":501,
+    "name":"QueryInTask",
+    "data":{
+        "pageOffset": 0,
+        "pageSize": 5,
+        "finished": false,
+        "all": false
+    }
+}
+{
+    "id":502,
+    "name":"QueryInTask",
+    "data":{
+        "pageOffset": 0,
+        "pageSize": 5,
+        "finished": true,
+        "all": false
+    }
+}
+{
+    "id":503,
+    "name":"QueryInTask",
+    "data":{
+        "pageOffset": 0,
+        "pageSize": 1,
+        "finished": false,
+        "all": false
+    }
+}
+{
+    "id":504,
+    "name":"QueryInTask",
+    "data":{
+        "pageOffset": 1,
+        "pageSize": 1,
+        "finished": false,
+        "all": false
+    }
+}
+```
+## QueryOutTask
+```json
+{
+    "id":601,
+    "name":"QueryOutTask",
+    "data":{
+        "pageOffset": 0,
+        "pageSize": 10,
+        "finished": false,
+        "all": true
+    }
+}
 
+
+```json
+
+## MaskInTask
 ```json
 
 {
@@ -143,7 +230,7 @@
     } 
 }
 ```
-
+## MaskOutTask
 
 ```json
 
@@ -155,6 +242,47 @@
         "txIndex": 0
     } 
 }
+```
+## GetCertainInTask
+```json
+
+{
+    "id":712,
+    "name":"GetCertainInTask",
+    "data":{
+        "block": 1000, 
+        "txIndex": 0
+    } 
+}
+```
+
+## GetCertainOutTask
+```json
+{
+    "id":712,
+    "name":"GetCertainOutTask",
+    "data":{
+        "block": 1000, 
+        "txIndex": 0
+    } 
+}
+
+```
+
+## DeleteAllInTask, DeleteAllOutTask
+```json
+{
+    "id":812,
+    "name":"DeleteAllInTask",
+    "data":{} 
+}
+
+{
+    "id":813,
+    "name":"DeleteAllOutTask",
+    "data":{} 
+}
+
 ```
 
 ## Cats

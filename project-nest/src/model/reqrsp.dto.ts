@@ -1,3 +1,5 @@
+import { InTaskModel } from 'src/entity/InTaskModel';
+import { OutTaskModel } from 'src/entity/OutTaskModel';
 import { StatusOutTask, TaskType } from './type';
 
 export class MarkInTask {
@@ -5,6 +7,10 @@ export class MarkInTask {
     txIndex: number;
 }
 export class MarkOutTask {
+    block: number;
+    txIndex: number;
+}
+export class GetTask {
     block: number;
     txIndex: number;
 }
@@ -30,7 +36,14 @@ export class QueryInTaskRsp {
     all: boolean;
     data: InTask[];
 }
-
+export class QueryOutTaskRsp {
+    pageOffset: number;
+    pageSize: number;
+    total: number;
+    finished: boolean;
+    all: boolean;
+    data: OutTask[];
+}
 export class InTask {
     finished: boolean;
     block: number;
@@ -51,14 +64,6 @@ export class OutTask {
     newHashId: string;
 }
 
-export class QueryOutTaskRsp {
-    pageOffset: number;
-    pageSize: number;
-    total: number;
-    finished: boolean;
-    all: boolean;
-    data: OutTask[];
-}
 //////////////////////////////////
 export class RpcReq {
     id: number;
@@ -70,7 +75,8 @@ export class RpcReq {
         | MarkInTask
         | MarkOutTask
         | QueryInTask
-        | QueryOutTask;
+        | QueryOutTask
+        | GetTask;
 }
 
 export class RpcRsp {
@@ -85,4 +91,28 @@ export enum RpcStatusCode {
     WRONG_ARG = 2,
     FAIL = 3,
     EXIST = 4,
+}
+
+export function transInTaskModel(task: InTaskModel): InTask {
+    return {
+        finished: task.finished,
+        block: task.block,
+        txIndex: task.txIndex,
+        address: task.address,
+        pubKey: task.pubKey,
+        hashId: task.hashId,
+    };
+}
+export function transOutTaskModel(task: OutTaskModel): OutTask {
+    return {
+        finished: task.finished,
+        block: task.block,
+        txIndex: task.txIndex,
+        address: task.address,
+        pubKey: task.pubKey,
+        status: task.status as StatusOutTask,
+        encryptSecret: task.encryptSecret,
+        oldHashId: task.oldHashId,
+        newHashId: task.newHashId,
+    };
 }
