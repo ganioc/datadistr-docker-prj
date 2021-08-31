@@ -1,8 +1,8 @@
 {
-  "name": "project-nest",
+  "name": "task-state-keeper",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "yango",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

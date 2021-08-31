@@ -5,21 +5,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsController } from './cats.controller';
 import { CatsService } from './cats.service';
-import { DogsController } from './dogs/dogs.controller';
-import { InTaskModel } from './entity/InTaskModel';
-import { OutTaskModel } from './entity/OutTaskModel';
-import { TasksController } from './tasks.controller';
 import { TasksModule } from './tasks.module';
-import { TasksService } from './tasks.service';
+
+const HOST = process.env.HOST ? process.env.HOST : '192.168.0.199';
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 27017;
+const USERNAME = process.env.USERNAME ? process.env.USERNAME : 'john';
+const PASSWORD = process.env.PASSWORD ? process.env.PASSWORD : 'dianke123';
 
 @Module({
     imports: [
         TypeOrmModule.forRoot({
             type: 'mongodb',
-            host: '192.168.0.199',
-            port: 27017,
-            username: 'john',
-            password: 'dianke123',
+            host: HOST,
+            port: PORT,
+            username: USERNAME,
+            password: PASSWORD,
             database: 'admin',
             synchronize: true,
             logging: true,
