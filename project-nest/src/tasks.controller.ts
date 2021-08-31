@@ -12,7 +12,7 @@ export class TasksController {
     findInTask() {
         console.log('get intask');
         // return 'get intask';
-        return this.tasksService.findAll();
+        return this.tasksService.findAllInTask();
     }
     @Post('rpc/v1/')
     async apiRpc(@Body() req: RpcReq): Promise<RpcRsp> {
@@ -22,6 +22,6 @@ export class TasksController {
     @Get('outtask')
     findOutTask() {
         console.log('get outTask');
-        return 'get outtask';
+        return this.tasksService.findAllOutTask();
     }
 }

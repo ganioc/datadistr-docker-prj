@@ -23,9 +23,18 @@ export class TasksService {
             this.connection.getMongoRepository(OutTaskModel);
     }
 
-    findAll(): Promise<InTaskModel[]> {
-        return this.inTaskModelRepository.find();
+    findAll(
+        repos: MongoRepository<InTaskModel> | MongoRepository<OutTaskModel>,
+    ): Promise<InTaskModel[] | OutTaskModel[]> {
+        return repos.find();
     }
+    findAllInTask(): Promise<InTaskModel[] | OutTaskModel[]> {
+        return this.findAll(this.inTaskModelRepository);
+    }
+    findAllOutTask(): Promise<OutTaskModel[] | InTaskModel[]> {
+        return this.findAll(this.outTaskModelRepository);
+    }
+
     // findAllOutTaskModel(): Promise<OutTaskModel[]> {
     //     return this.outTaskModelRepository.find();
     // }
