@@ -98,8 +98,39 @@
                 "newHashId": "yyy"
             } 
 }
+{
+    "id":332,
+    "name":"InsertOutTask",
+    "data":{
+                "finished": false,
+                "block": 2,
+                "txIndex": 0,
+                "address": "0xasf",
+                "pubKey": "xsdfdf",
+                "status": "succeed",
+                "encryptSecret": "asdfsdafasdf",
+                "oldHashId": "xxx",
+                "newHashId": "yyy"
+            } 
+}
 ```
+## GetInTask
+```json
+{
+    "id":301,
+    "name":"GetInTask",
+    "data":{}
+}
+```
+## GetOutTask
+```json
+{
+    "id":401,
+    "name":"GetOutTask",
+    "data":{}
+}
 
+```
 
 ```json
 

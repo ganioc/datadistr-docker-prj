@@ -74,11 +74,17 @@ export class TasksService {
         };
     }
     async handleGetInTask(req: RpcReq): Promise<RpcRsp> {
+        const result = await this.inTaskModelRepository.findOne({
+            finished: false,
+        });
+        console.log('handleGetInTask');
+        console.log(result);
+
         return {
             id: req.id,
             name: req.name,
             statusCode: RpcStatusCode.OK,
-            data: [],
+            data: result !== undefined ? [result] : [],
         };
     }
     async handleGetOutTask(req: RpcReq): Promise<RpcRsp> {
