@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, MongoRepository, Repository } from 'typeorm';
+import { Connection, MongoRepository } from 'typeorm';
 import { InTaskModel } from './entity/InTaskModel';
 import { OutTaskModel } from './entity/OutTaskModel';
 import {
@@ -83,6 +82,7 @@ export class TasksService {
     async handleGetInTask(req: RpcReq): Promise<RpcRsp> {
         const result = await this.inTaskModelRepository.findOne({
             finished: false,
+            order: { block: 'ASC' },
         });
         console.log('handleGetInTask');
         console.log(result);
@@ -97,6 +97,7 @@ export class TasksService {
     async handleGetOutTask(req: RpcReq): Promise<RpcRsp> {
         const result = await this.outTaskModelRepository.findOne({
             finished: false,
+            order: { block: 'ASC' },
         });
         console.log('handleGetOutTask');
         console.log(result);
@@ -119,6 +120,7 @@ export class TasksService {
         if (data.all === false) {
             queryString.where = { finished: data.finished };
         }
+        queryString.order = { block: 'DESC' };
         console.log('queryString:', queryString);
 
         const [result, num] = await this.inTaskModelRepository.findAndCount(
@@ -155,6 +157,7 @@ export class TasksService {
         if (data.all === false) {
             queryString.where = { finished: data.finished };
         }
+        queryString.order = { block: 'DESC' };
         console.log('queryString:', queryString);
 
         const [result, num] = await this.outTaskModelRepository.findAndCount(
@@ -261,7 +264,7 @@ export class TasksService {
                 block: data.block,
                 txIndex: data.txIndex,
             },
-            { finished: true },
+            { $set: { finished: true } },
         );
         console.log('result', result);
 
@@ -280,7 +283,7 @@ export class TasksService {
                 block: data.block,
                 txIndex: data.txIndex,
             },
-            { finished: true },
+            { $set: { finished: true } },
         );
         console.log('result', result);
 
@@ -374,7 +377,7 @@ export class TasksService {
                 return this.handleGetCertainInTask(req);
                 break;
             case 'GetCertainOutTask':
-                return this.handleGetCertainInTask(req);
+                return this.handleGetCertainOutTask(req);
                 break;
             case 'DeleteAllInTask':
                 return this.handleDeleteAllInTask(req);

@@ -141,6 +141,21 @@
                 "newHashId": "yyy"
             } 
 }
+{
+    "id":334,
+    "name":"InsertOutTask",
+    "data":{
+                "finished": true,
+                "block": 25,
+                "txIndex": 0,
+                "address": "0xasf",
+                "pubKey": "xsdfdf",
+                "status": "succeed",
+                "encryptSecret": "asdfsdafasdf",
+                "oldHashId": "xxx",
+                "newHashId": "yyy"
+            } 
+}
 ```
 ## GetInTask
 ```json
@@ -168,7 +183,7 @@
         "pageOffset": 0,
         "pageSize": 5,
         "finished": false,
-        "all": false
+        "all": true
     }
 }
 {
@@ -176,7 +191,7 @@
     "name":"QueryInTask",
     "data":{
         "pageOffset": 0,
-        "pageSize": 5,
+        "pageSize": 15,
         "finished": true,
         "all": false
     }
@@ -225,7 +240,7 @@
     "id":332,
     "name":"MarkInTask",
     "data":{
-        "block": 1, 
+        "block": 9, 
         "txIndex": 0
     } 
 }
@@ -238,7 +253,7 @@
     "id":312,
     "name":"MarkOutTask",
     "data":{
-        "block": 1000, 
+        "block": 5, 
         "txIndex": 0
     } 
 }
@@ -250,7 +265,7 @@
     "id":712,
     "name":"GetCertainInTask",
     "data":{
-        "block": 1000, 
+        "block": 8, 
         "txIndex": 0
     } 
 }
@@ -262,7 +277,7 @@
     "id":712,
     "name":"GetCertainOutTask",
     "data":{
-        "block": 1000, 
+        "block": 2, 
         "txIndex": 0
     } 
 }
@@ -307,4 +322,45 @@
     "name": "GetInTask",
     "data":{}
 }
+```
+
+
+## temp records
+
+```json
+"data": [
+            {
+                "finished": false,
+                "block": 9,
+                "txIndex": 0,
+                "address": "0xasfasdfas",
+                "pubKey": "xsdfdfdsfsad",
+                "hashId": "asdfsdafdsffsdasdf"
+            },
+            {
+                "finished": false,
+                "block": 8,
+                "txIndex": 0,
+                "address": "0xasfasdfas",
+                "pubKey": "xsdfdfdsfsad",
+                "hashId": "asdfsdafdsffsdasdf"
+            },
+            {
+                "finished": true,
+                "block": 7,
+                "txIndex": 0,
+                "address": "0xasfasdfas",
+                "pubKey": "xsdfdfdsfsad",
+                "hashId": "asdfsdafdsffsdasdf"
+            },
+            {
+                "finished": false,
+                "block": 6,
+                "txIndex": 0,
+                "address": "0xasfasdfas",
+                "pubKey": "xsdfdfdsfsad",
+                "hashId": "asdfsdafdsffsdasdf"
+            }
+        ]
+
 ```
