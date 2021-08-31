@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    Index,
+    ObjectIdColumn,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('outtask')
 export class OutTaskModel {
-    @PrimaryGeneratedColumn()
+    // @PrimaryGeneratedColumn()
+    @ObjectIdColumn()
     id: number;
 
     @Index()
@@ -26,9 +33,8 @@ export class OutTaskModel {
     @Column()
     pubKey: string;
 
-    @Index()
-    @Column('number', { default: true })
-    status: number = -1;
+    @Column()
+    status: number;
 
     @Column()
     encryptSecret: string;

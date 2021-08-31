@@ -8,4 +8,4 @@ export type TaskType =
     | 'MarkInTask'
     | 'MarkOutTask';
 
-export type StatusOutTask = 'succeed' | 'hash-not-found';
+export type StatusOutTask = 0 | 1;

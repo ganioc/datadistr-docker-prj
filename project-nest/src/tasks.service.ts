@@ -1,19 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { Connection, MongoRepository, Repository } from 'typeorm';
 import { InTaskModel } from './entity/InTaskModel';
 import { OutTaskModel } from './entity/OutTaskModel';
-import { RpcReq, RpcRsp, RpcStatusCode } from './model/reqrsp.dto';
+import {
+    InTask,
+    OutTask,
+    RpcReq,
+    RpcRsp,
+    RpcStatusCode,
+} from './model/reqrsp.dto';
 
 @Injectable()
 export class TasksService {
-    private inTaskModelRepository: Repository<InTaskModel>;
-    private outTaskModelRepository: Repository<OutTaskModel>;
+    private inTaskModelRepository: MongoRepository<InTaskModel>;
+    private outTaskModelRepository: MongoRepository<OutTaskModel>;
 
     constructor(private readonly connection: Connection) {
-        this.inTaskModelRepository = this.connection.getRepository(InTaskModel);
+        this.inTaskModelRepository =
+            this.connection.getMongoRepository(InTaskModel);
         this.outTaskModelRepository =
-            this.connection.getRepository(OutTaskModel);
+            this.connection.getMongoRepository(OutTaskModel);
     }
 
     findAll(): Promise<InTaskModel[]> {
@@ -22,6 +29,33 @@ export class TasksService {
     // findAllOutTaskModel(): Promise<OutTaskModel[]> {
     //     return this.outTaskModelRepository.find();
     // }
+    async exist(
+        repos: MongoRepository<InTaskModel> | MongoRepository<OutTaskModel>,
+        block: number,
+        txIndex: number,
+    ): Promise<boolean> {
+        // const result = await repos
+        //     .createQueryBuilder()
+        //     .where('block = :block', { block: `${block}` })
+        //     .andWhere('txIndex = :txIndex', { txIndex: `${txIndex}` })
+        //     .getOne();
+        const result = await repos.findOne({
+            block: block,
+            txIndex: txIndex,
+        });
+
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    async existInTask(block: number, txIndex: number): Promise<boolean> {
+        return this.exist(this.inTaskModelRepository, block, txIndex);
+    }
+    async existOutTask(block: number, txIndex: number): Promise<boolean> {
+        return this.exist(this.outTaskModelRepository, block, txIndex);
+    }
     async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
         return {
             id: req.id,
@@ -63,18 +97,74 @@ export class TasksService {
         };
     }
     async handleInsertInTask(req: RpcReq): Promise<RpcRsp> {
+        console.log('handleInsertInTask');
+        const task: InTaskModel = new InTaskModel();
+        task.finished = false;
+        const data = req.data as InTask;
+        task.id = new Date().getTime();
+        task.block = data.block;
+        task.txIndex = data.txIndex;
+        task.address = data.address;
+        task.pubKey = data.pubKey;
+        task.hashId = data.hashId;
+
+        const check = await this.existInTask(data.block, data.txIndex);
+
+        if (check) {
+            return {
+                id: req.id,
+                name: req.name,
+                statusCode: RpcStatusCode.EXIST,
+                data: [],
+            };
+        }
+
+        const result = await this.connection.manager.save(task);
+        console.log('result: ', result);
+
         return {
             id: req.id,
             name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: [],
+            statusCode:
+                result.id !== undefined ? RpcStatusCode.OK : RpcStatusCode.FAIL,
+            data: [data],
         };
     }
     async handleInsertOutTask(req: RpcReq): Promise<RpcRsp> {
+        const task: OutTaskModel = new OutTaskModel();
+        task.finished = false;
+
+        const data = req.data as OutTask;
+        task.id = new Date().getTime();
+        task.finished = false;
+        task.block = data.block;
+        task.txIndex = data.txIndex;
+        task.address = data.address;
+        task.pubKey = data.pubKey;
+        task.status = data.status;
+        task.encryptSecret = data.encryptSecret;
+        task.oldHashId = data.oldHashId;
+        task.newHashId = data.newHashId;
+
+        const check = await this.existOutTask(data.block, data.txIndex);
+
+        if (check) {
+            return {
+                id: req.id,
+                name: req.name,
+                statusCode: RpcStatusCode.EXIST,
+                data: [],
+            };
+        }
+
+        const result = await this.connection.manager.save(task);
+        console.log('result: ', result);
+
         return {
             id: req.id,
             name: req.name,
-            statusCode: RpcStatusCode.OK,
+            statusCode:
+                result.id !== undefined ? RpcStatusCode.OK : RpcStatusCode.FAIL,
             data: [],
         };
     }
@@ -95,8 +185,8 @@ export class TasksService {
         };
     }
     async apiRpcV1(req: RpcReq): Promise<RpcRsp | null> {
-        console.log('id:', req.id);
-        console.log('name:', req.name);
+        // console.log('id:', req.id);
+        // console.log('name:', req.name);
 
         switch (req.name) {
             case 'GetInTask':

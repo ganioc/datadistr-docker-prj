@@ -84,4 +84,5 @@ export enum RpcStatusCode {
     UNKNOWN = 1,
     WRONG_ARG = 2,
     FAIL = 3,
+    EXIST = 4,
 }

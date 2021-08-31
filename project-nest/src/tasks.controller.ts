@@ -17,7 +17,7 @@ export class TasksController {
     @Post('rpc/v1/')
     async apiRpc(@Body() req: RpcReq): Promise<RpcRsp> {
         console.log(req);
-        return await this.tasksService.apiRpcV1(req);
+        return this.tasksService.apiRpcV1(req);
     }
     @Get('outtask')
     findOutTask() {

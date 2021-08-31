@@ -1,9 +1,16 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    Entity,
+    Index,
+    ObjectIdColumn,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 import 'reflect-metadata';
 
 @Entity('intask')
 export class InTaskModel {
-    @PrimaryGeneratedColumn()
+    // @PrimaryGeneratedColumn()
+    @ObjectIdColumn()
     id: number;
 
     // eslint-disable-next-line @typescript-eslint/no-inferrable-types
