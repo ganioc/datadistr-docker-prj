@@ -2,8 +2,10 @@ version: "2.4"  # optional since v1.27.0
 services:
   taskeeper:
     image: registry.ruffcorp.com/pub/task-keeper:0.1.0
-    container_name: : 'taskeeper'
+    container_name: 'taskeeper'
     restart: always
+    depends_on: 
+      - 'mongo'
     environment: 
       SERVICE_PORT: 3000
       HOST: "${taskeeper_host}"
