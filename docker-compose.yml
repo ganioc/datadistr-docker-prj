@@ -6,6 +6,8 @@ services:
     restart: always
     depends_on: 
       - 'mongo'
+    env_file:
+      - .env
     environment: 
       SERVICE_PORT: 3000
       HOST: "${taskeeper_host}"
@@ -20,6 +22,8 @@ services:
     image: postgres
     container_name: 'postgres'
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: "${mysql_db_name}"
       POSTGRES_USER: "${mysql_user_name}"
@@ -37,9 +41,9 @@ services:
     env_file:
       - .env
     environment:
-      MONGO_INITDB_DATABASE: '${mongo_db_name}'
-      MONGO_INITDB_ROOT_USERNAME: '${mongo_root_name}'
-      MONGO_INITDB_ROOT_PASSWORD: '${mongo_root_password}'
+      MONGO_INITDB_DATABASE: mongodb
+      MONGO_INITDB_ROOT_USERNAME: john
+      MONGO_INITDB_ROOT_PASSWORD: dianke123
     ports:
       - '27017-27019:27017-27019'
     expose:
@@ -47,6 +51,7 @@ services:
     volumes:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./data/mongo:/data/db      
+
 
 
 

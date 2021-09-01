@@ -1,0 +1,10 @@
+version: "2.4"  # optional since v1.27.0
+services:
+  ipfs:
+    image: ipfs/go-ipfs:v0.4.23
+    container_name : 'ipfs'
+    restart: always
+    ports:
+      - '5001:5001'
+    volumes:
+      - ./data/ipfs:/data/ipfs
