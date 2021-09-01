@@ -31,7 +31,7 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
   mongo:
-    image: mongo:3.6.0
+    image: mongo:3.6
     container_name : 'mongodb'
     restart: always
     environment:
