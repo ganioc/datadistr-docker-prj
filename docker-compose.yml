@@ -1,5 +1,19 @@
 version: "2.4"  # optional since v1.27.0
 services:
+  taskeeper:
+    image: registry.ruffcorp.com/pub/task-keeper:0.1.0
+    container_name: : 'taskeeper'
+    restart: always
+    environment: 
+      SERVICE_PORT: 3000
+      HOST: "${taskeeper_host}"
+      PORT: "${taskeeper_port}"
+      USERNAME: "${mongo_root_name}"
+      PASSWORD: "${mango_root_password}"
+    ports:
+      - '3000:3000'
+    expose: 
+      - '3000'
   postgres:
     image: postgres
     container_name: 'postgres'
