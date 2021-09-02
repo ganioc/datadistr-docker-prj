@@ -35,5 +35,7 @@ const PASSWORD = process.env.PASSWORD ? process.env.PASSWORD : 'dianke123';
     providers: [AppService],
 })
 export class AppModule {
-    constructor(private connection: Connection) { }
+    constructor(private connection: Connection) {
+        // init database here?
+    }
 }

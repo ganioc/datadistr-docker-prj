@@ -5,7 +5,7 @@ import {
     ManyToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Record } from './Record';
+import { RecordOrig } from './RecordOrig';
 
 @Entity('recordcopy')
 export class RecordCopy {
@@ -23,11 +23,11 @@ export class RecordCopy {
     secret: string;
 
     @Column()
-    date: number;
+    date: Date;
 
     @Column()
     groupId: number;
 
-    @ManyToOne(type => Record, record => record.recordCopys)
-    record: Record;
+    @ManyToOne((type) => RecordOrig, (recordOrig) => recordOrig.recordCopys)
+    recordOrig: RecordOrig;
 }

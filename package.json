@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/ganioc/datadistr-docker-prj#readme",
   "dependencies": {
+    "bs58": "^4.0.1",
+    "crypto": "^1.0.1",
     "typeorm": "^0.2.37"
   }
 }

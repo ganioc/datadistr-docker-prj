@@ -1,14 +1,17 @@
+import { group } from 'console';
 import {
     Column,
     Entity,
     Index,
+    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Group } from './Group';
 import { RecordCopy } from './RecordCopy';
 
 @Entity('record')
-export class Record {
+export class RecordOrig {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -26,8 +29,12 @@ export class Record {
 
     @Index()
     @Column()
-    date: number;
+    date: Date;
 
-    @OneToMany(type => RecordCopy, recordCopy => recordCopy.record)
+    // eslint-disable-next-line prettier/prettier
+    @OneToMany(type => RecordCopy, recordCopy => recordCopy.recordOrig)
     recordCopys: RecordCopy[];
+
+    @ManyToMany((_type) => Group, (group) => group.recordOrigs)
+    groups: Group[];
 }

@@ -26,8 +26,8 @@ export class User {
 
     @Index()
     @Column()
-    date: number;
+    date: Date;
 
-    @ManyToMany(type => Group, group => group.users)
+    @ManyToMany((type) => Group, (group) => group.users)
     groups: Group[];
 }

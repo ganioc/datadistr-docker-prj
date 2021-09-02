@@ -6,7 +6,14 @@ import {
     ManyToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { RecordOrig } from './RecordOrig';
 import { User } from './User';
+
+/**
+ * group:
+ * 0 - default group
+ * 
+ */
 
 @Entity('group')
 export class Group {
@@ -28,9 +35,12 @@ export class Group {
 
     @Index()
     @Column()
-    date: number;
+    date: Date;
 
-    @ManyToMany(type => User, user => user.groups)
+    @ManyToMany((type) => User, (user) => user.groups)
     @JoinTable()
     users: User[];
+
+    @ManyToMany((type) => RecordOrig, (recordOrig) => recordOrig.groups)
+    recordOrigs: RecordOrig[];
 }
