@@ -24,3 +24,11 @@ export function ipfsHash(buf: Buffer): string {
 
     return multihash.toString();
 }
+
+export enum StatusCode {
+    OK = 0,
+    UNKNOWN = 1,
+    WRONG_ARG = 2,
+    FAIL = 3,
+    EXIST = 4,
+}

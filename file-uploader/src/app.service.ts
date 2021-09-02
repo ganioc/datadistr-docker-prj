@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ipfsHash } from './app.utils';
+import { ipfsHash, StatusCode } from './app.utils';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
@@ -44,11 +44,29 @@ export class AppService {
     getHello(): string {
         return 'Hello World! file-uploader, to upload a picture.';
     }
+    async checkFileByHashId(hashId: string) {
+        const recordExist = await this.recordOrigRepository.findOne({
+            hashId: hashId,
+        });
+        return {
+            statusCode: recordExist ? StatusCode.OK : StatusCode.UNKNOWN,
+        };
+    }
     async uploadFile(name: string, buf: Buffer) {
         const hashId = ipfsHash(buf);
         console.log('hashId: ' + hashId);
 
         // save to local dir
+        const recordExist = await this.recordOrigRepository.findOne({
+            hashId: hashId,
+        });
+
+        if (recordExist) {
+            return {
+                statusCode: StatusCode.EXIST,
+            };
+        }
+
         const writer = fs.createWriteStream(path.join('./upload', hashId), {
             flags: 'w',
         });
@@ -59,7 +77,7 @@ export class AppService {
         console.log('result', result);
 
         if (result) {
-            return { statusCode: -1 };
+            return { statusCode: StatusCode.FAIL };
         }
 
         // save to database
@@ -72,7 +90,7 @@ export class AppService {
 
         // return hash Id
         return {
-            statusCode: 0,
+            statusCode: StatusCode.OK,
             hashId: hashId,
         };
     }

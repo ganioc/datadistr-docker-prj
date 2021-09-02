@@ -3,6 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { FileController } from './file/file.controller';
+import { FileService } from './file/file.service';
 
 const HOST = process.env.HOST ? process.env.HOST : '192.168.0.199';
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5432;
@@ -31,8 +33,8 @@ const PASSWORD = process.env.PASSWORD ? process.env.PASSWORD : 'dianke123';
             },
         }),
     ],
-    controllers: [AppController],
-    providers: [AppService],
+    controllers: [AppController, FileController],
+    providers: [AppService, FileService],
 })
 export class AppModule {
     constructor(private connection: Connection) {

@@ -1,6 +1,7 @@
 import {
     Controller,
     Get,
+    Param,
     Post,
     UploadedFile,
     UseInterceptors,
@@ -30,4 +31,11 @@ export class AppController {
 
         return this.appService.uploadFile(file.originalname, file.buffer);
     }
+
+    // @Get('exist:hash')
+    // existFile(@Param('hash') hash: string) {
+    //     console.log('existFile');
+    //     console.log(hash);
+    //     return this.appService.checkFileByHashId(hash);
+    // }
 }
