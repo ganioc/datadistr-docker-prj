@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ipfsHash, StatusCode } from './app.utils';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as util from 'util';
+import { StatusCode } from './app.utils';
 import { Connection, Repository } from 'typeorm';
 import { RecordOrig } from './entity/RecordOrig';
 import { RecordCopy } from './entity/RecordCopy';
 import { Group } from './entity/Group';
 import { User } from './entity/User';
-import { INSTANCE_ID_SYMBOL } from '@nestjs/core/injector/instance-wrapper';
 
 @Injectable()
 export class AppService {
@@ -50,48 +46,6 @@ export class AppService {
         });
         return {
             statusCode: recordExist ? StatusCode.OK : StatusCode.UNKNOWN,
-        };
-    }
-    async uploadFile(name: string, buf: Buffer) {
-        const hashId = ipfsHash(buf);
-        console.log('hashId: ' + hashId);
-
-        // save to local dir
-        const recordExist = await this.recordOrigRepository.findOne({
-            hashId: hashId,
-        });
-
-        if (recordExist) {
-            return {
-                statusCode: StatusCode.EXIST,
-            };
-        }
-
-        const writer = fs.createWriteStream(path.join('./upload', hashId), {
-            flags: 'w',
-        });
-
-        const promiseWrite = util.promisify(writer.write.bind(writer));
-
-        const result = await promiseWrite(buf);
-        console.log('result', result);
-
-        if (result) {
-            return { statusCode: StatusCode.FAIL };
-        }
-
-        // save to database
-        const record = new RecordOrig();
-        record.date = new Date();
-        record.fileName = name;
-        record.hashId = hashId;
-        record.type = 'normal';
-        await this.connection.manager.save(record);
-
-        // return hash Id
-        return {
-            statusCode: StatusCode.OK,
-            hashId: hashId,
         };
     }
 }

@@ -42,5 +42,6 @@ export class Group {
     users: User[];
 
     @ManyToMany((type) => RecordOrig, (recordOrig) => recordOrig.groups)
+    @JoinTable()
     recordOrigs: RecordOrig[];
 }

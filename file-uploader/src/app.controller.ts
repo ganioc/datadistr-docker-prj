@@ -18,20 +18,6 @@ export class AppController {
     getHello(): string {
         return this.appService.getHello();
     }
-    @Post('upload')
-    @UseInterceptors(
-        FileInterceptor('file', {
-            fileFilter: imageFileFilter,
-        }),
-    )
-    uploadFile(@UploadedFile() file: Express.Multer.File) {
-        console.log('uploadFile');
-
-        console.log(file);
-
-        return this.appService.uploadFile(file.originalname, file.buffer);
-    }
-
     // @Get('exist:hash')
     // existFile(@Param('hash') hash: string) {
     //     console.log('existFile');
