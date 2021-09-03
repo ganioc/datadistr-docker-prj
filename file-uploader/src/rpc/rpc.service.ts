@@ -5,7 +5,7 @@ import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqDelGroup, ReqGetGroup, ReqGetGroups, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqDelGroup, ReqDelUser, ReqGetGroup, ReqGetGroups, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -138,6 +138,25 @@ export class RpcService {
         })
 
     }
+    async handleGetUser(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqGetUser;
+        const result = await this.userRepository.findOne({ address: data.address })
+        if (result) {
+            return this.makeRpcRsp(req, StatusCode.OK, [result]);
+        } else {
+            return this.makeRpcRsp(req, StatusCode.UNKNOWN, []);
+        }
+    }
+    async handleDelUser(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqDelUser;
+        const result = await this.userRepository.delete({ address: data.address })
+        console.log(result)
+        if (result.affected > 0) {
+            return this.makeRpcRsp(req, StatusCode.OK, []);
+        } else {
+            return this.makeRpcRsp(req, StatusCode.UNKNOWN, []);
+        }
+    }
     async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
         return {
             id: req.id,
@@ -168,6 +187,12 @@ export class RpcService {
                     break;
                 case "getUsers":
                     return this.handleGetUsers(req);
+                    break;
+                case "getUser":
+                    return this.handleGetUser(req);
+                    break;
+                case "delUser":
+                    return this.handleDelUser(req);
                     break;
                 default:
                     break;

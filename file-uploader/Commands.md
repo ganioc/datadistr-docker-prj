@@ -188,7 +188,27 @@ OK
 
 by address
 
+```json
+{
+    "id": 107,
+    "name": "getUser",
+    "data": {
+        "address": 2
+    }
+}
+```
+
 ## delUser
+
+```json
+{
+    "id": 107,
+    "name": "delUser",
+    "data": {
+        "address": "2"
+    }
+}
+```
 
 ## addUserToGroup
 
