@@ -5,7 +5,7 @@ import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -83,6 +83,29 @@ export class RpcService {
             .skip(offset)
             .getManyAndCount();
         console.log(result);
+        return this.makeRpcRsp(req, StatusCode.OK, {
+            pageOffset: offset,
+            pageSize: size,
+            total: num,
+            data: result
+        })
+    }
+    async handleGetGroupUsers(req: RpcReq): Promise<RpcRsp> {
+        console.log('handleGetGroupUsers')
+        const data = req.data as ReqGetGroupUsers;
+
+        const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+
+        const [result, num] = await this.connection
+            .createQueryBuilder(User, 'user')
+            .leftJoin('user.groups', 'group', "group.groupId = :groupId", { groupId: data.groupId })
+            .limit(size)
+            .skip(offset)
+            .getManyAndCount();
+
+        console.log(result);
+
         return this.makeRpcRsp(req, StatusCode.OK, {
             pageOffset: offset,
             pageSize: size,
@@ -185,6 +208,7 @@ export class RpcService {
             .leftJoinAndSelect('group.users', 'user')
             .where("group.groupId = :id", { id: data.groupId })
             .getOne();
+        console.log('group:', group)
         if (!group) {
             console.log("not found:", data.groupId);
             return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
@@ -192,12 +216,23 @@ export class RpcService {
 
         // group.users.push(user);
         group.users = group.users ? group.users : [];
+
+        // check if it exists?
+        const exist = group.users.filter((item) => {
+            item.address === user.address
+        });
+        console.log('exist:', exist);
+
+        if (exist.length > 0) {
+            return this.makeRpcRsp(req, StatusCode.EXIST, [])
+        }
+
         group.users.push(user);
 
         const result = await this.groupRepository.manager.save(group);
         console.log("result:", result);
         if (group) {
-            return this.makeRpcRsp(req, StatusCode.OK, [group])
+            return this.makeRpcRsp(req, StatusCode.OK, [])
         } else {
             return this.makeRpcRsp(req, StatusCode.FAIL, [])
         }
@@ -252,6 +287,9 @@ export class RpcService {
                     break;
                 case "getGroups":
                     return this.handleGetGroups(req);
+                    break;
+                case "getGroupUsers":
+                    return this.handleGetGroupUsers(req);
                     break;
                 case "delGroup":
                     return this.handleDelGroup(req);

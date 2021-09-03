@@ -1,5 +1,5 @@
 
-export type ReqType = "addGroup" | "getGroups" | "delGroup" | "getGroup" | "addUser" | "getUsers" | "getUser" | "delUser" | "addUserToGroup" | "delUserFromGroup" | "getRecords" | "getRecord" | "getRecordCopys" | "insertRecordCopy" | "delRecordCopy";
+export type ReqType = "addGroup" | "getGroups" | "delGroup" | "getGroup" | "getGroupUsers" | "addUser" | "getUsers" | "getUser" | "delUser" | "addUserToGroup" | "delUserFromGroup" | "getRecords" | "getRecord" | "getRecordCopys" | "insertRecordCopy" | "delRecordCopy";
 
 export type RspType = ReqType;
 export const DEFAULT_GROUP = 0;
@@ -10,6 +10,12 @@ export class ReqAddGroup {
     level: number;
 }
 export class ReqGetGroups {
+    pageOffset: number;
+    pageSize: number;
+}
+
+export class ReqGetGroupUsers {
+    groupId: number;
     pageOffset: number;
     pageSize: number;
 }
@@ -69,6 +75,7 @@ export class RpcReq {
         | null
         | ReqAddGroup
         | ReqGetGroups
+        | ReqGetGroupUsers
         | ReqGetGroup
         | ReqDelGroup
         | ReqAddUser
@@ -97,10 +104,17 @@ export class RspRecordCopy {
 
 }
 export class RspGroupPagination {
+    groupId: number;
     pageOffset: number;
     pageSize: number;
     total: number;
     data: RspGroup[]
+}
+export class RspGroupUserPagination {
+    pageOffset: number;
+    pageSize: number;
+    total: number;
+    data: RspUser[]
 }
 export class RspUserPagination {
     pageOffset: number;
@@ -108,6 +122,7 @@ export class RspUserPagination {
     total: number;
     data: RspUser[]
 }
+
 export class RspRecordPagination {
     pageOffset: number;
     pageSize: number;
@@ -127,6 +142,7 @@ export type RpcRspData =
     | RspRecord[]
     | RspRecordCopy[]
     | RspGroupPagination
+    | RspGroupUserPagination
     | RspUserPagination
     | RspRecordPagination
     | RspRecordCopyPagination

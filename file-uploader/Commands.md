@@ -121,6 +121,20 @@ OK
 
 pagination
 
+## getGroupUsers
+
+```json
+{
+    "id": 104,
+    "name": "getGroupUsers",
+    "data": {
+        "groupId": 1,
+        "pageOffset": 0,
+        "pageSize": 10
+    }
+}
+```
+
 ## delGroup
 
 ```json
@@ -193,7 +207,7 @@ by address
     "id": 107,
     "name": "getUser",
     "data": {
-        "address": 2
+        "address": "456"
     }
 }
 ```
@@ -217,8 +231,16 @@ by address
     "id": 107,
     "name": "addUserToGroup",
     "data": {
-        "address": "2",
-        "groupId":
+        "address": "456",
+        "groupId": 1
+    }
+}
+{
+    "id": 107,
+    "name": "addUserToGroup",
+    "data": {
+        "address": "12345",
+        "groupId": 1
     }
 }
 ```
@@ -228,10 +250,10 @@ by address
 ```json
 {
     "id": 107,
-    "name": "addUserToGroup",
+    "name": "delUserFromGroup",
     "data": {
-        "address": "2",
-        "groupId":
+        "address": "456",
+        "groupId": 1
     }
 }
 ```
