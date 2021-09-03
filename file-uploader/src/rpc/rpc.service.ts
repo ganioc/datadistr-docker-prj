@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { off } from 'process';
 import { StatusCode } from 'src/app.utils';
 import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqDelGroup, ReqGetGroup, ReqGetGroups, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqDelGroup, ReqGetGroup, ReqGetGroups, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -104,6 +105,39 @@ export class RpcService {
         console.log(result);
         return this.makeRpcRsp(req, StatusCode.OK, []);
     }
+    async handleAddUser(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqAddUser;
+
+        const user = new User();
+        user.address = data.address;
+        user.name = data.name;
+        user.orgization = data.organization;
+        user.date = new Date();
+        const result = await this.userRepository.save(user);
+        if (result) {
+            return this.makeRpcRsp(req, StatusCode.OK, [result])
+        }
+    }
+    async handleGetUsers(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqGetUsers;
+
+        const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+        const [result, num] = await this.userRepository
+            .createQueryBuilder()
+            .limit(size)
+            .skip(offset)
+            .getManyAndCount();
+        console.log(result);
+
+        return this.makeRpcRsp(req, StatusCode.OK, {
+            pageOffset: offset,
+            pageSize: size,
+            total: num,
+            data: result
+        })
+
+    }
     async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
         return {
             id: req.id,
@@ -129,7 +163,12 @@ export class RpcService {
                 case "delGroup":
                     return this.handleDelGroup(req);
                     break;
-
+                case "addUser":
+                    return this.handleAddUser(req);
+                    break;
+                case "getUsers":
+                    return this.handleGetUsers(req);
+                    break;
                 default:
                     break;
             }

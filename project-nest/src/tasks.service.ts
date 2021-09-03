@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Connection, MongoRepository } from 'typeorm';
-import { InTaskModel } from './entity/InTaskModel';
-import { OutTaskModel } from './entity/OutTaskModel';
+import { Injectable } from "@nestjs/common";
+import { Connection, MongoRepository } from "typeorm";
+import { InTaskModel } from "./entity/InTaskModel";
+import { OutTaskModel } from "./entity/OutTaskModel";
 import {
     GetTask,
     InTask,
@@ -15,7 +15,7 @@ import {
     RpcStatusCode,
     transInTaskModel,
     transOutTaskModel,
-} from './model/reqrsp.dto';
+} from "./model/reqrsp.dto";
 
 @Injectable()
 export class TasksService {
@@ -82,9 +82,9 @@ export class TasksService {
     async handleGetInTask(req: RpcReq): Promise<RpcRsp> {
         const result = await this.inTaskModelRepository.findOne({
             finished: false,
-            order: { block: 'ASC' },
+            order: { block: "ASC" },
         });
-        console.log('handleGetInTask');
+        console.log("handleGetInTask");
         console.log(result);
 
         return {
@@ -97,9 +97,9 @@ export class TasksService {
     async handleGetOutTask(req: RpcReq): Promise<RpcRsp> {
         const result = await this.outTaskModelRepository.findOne({
             finished: false,
-            order: { block: 'ASC' },
+            order: { block: "ASC" },
         });
-        console.log('handleGetOutTask');
+        console.log("handleGetOutTask");
         console.log(result);
 
         return {
@@ -120,14 +120,14 @@ export class TasksService {
         if (data.all === false) {
             queryString.where = { finished: data.finished };
         }
-        queryString.order = { block: 'DESC' };
-        console.log('queryString:', queryString);
+        queryString.order = { block: "DESC" };
+        console.log("queryString:", queryString);
 
         const [result, num] = await this.inTaskModelRepository.findAndCount(
             queryString,
         );
-        console.log('result:', result);
-        console.log('num:', num);
+        console.log("result:", result);
+        console.log("num:", num);
 
         return {
             id: req.id,
@@ -157,14 +157,14 @@ export class TasksService {
         if (data.all === false) {
             queryString.where = { finished: data.finished };
         }
-        queryString.order = { block: 'DESC' };
-        console.log('queryString:', queryString);
+        queryString.order = { block: "DESC" };
+        console.log("queryString:", queryString);
 
         const [result, num] = await this.outTaskModelRepository.findAndCount(
             queryString,
         );
-        console.log('result:', result);
-        console.log('num:', num);
+        console.log("result:", result);
+        console.log("num:", num);
 
         return {
             id: req.id,
@@ -184,7 +184,7 @@ export class TasksService {
         };
     }
     async handleInsertInTask(req: RpcReq): Promise<RpcRsp> {
-        console.log('handleInsertInTask');
+        console.log("handleInsertInTask");
         const data = req.data as InTask;
 
         const task: InTaskModel = new InTaskModel();
@@ -208,7 +208,7 @@ export class TasksService {
         }
 
         const result = await this.connection.manager.save(task);
-        console.log('result: ', result);
+        console.log("result: ", result);
 
         return {
             id: req.id,
@@ -243,10 +243,10 @@ export class TasksService {
                 data: [data],
             };
         }
-        console.log('task:', task);
+        console.log("task:", task);
 
         const result = await this.connection.manager.save(task);
-        console.log('result: ', result);
+        console.log("result: ", result);
 
         return {
             id: req.id,
@@ -266,7 +266,7 @@ export class TasksService {
             },
             { $set: { finished: true } },
         );
-        console.log('result', result);
+        console.log("result", result);
 
         return {
             id: req.id,
@@ -285,7 +285,7 @@ export class TasksService {
             },
             { $set: { finished: true } },
         );
-        console.log('result', result);
+        console.log("result", result);
 
         return {
             id: req.id,
@@ -348,41 +348,41 @@ export class TasksService {
 
         switch (req.name) {
             // Only return one task
-            case 'GetInTask':
+            case "GetInTask":
                 return this.handleGetInTask(req);
                 break;
             // Only return one task
-            case 'GetOutTask':
+            case "GetOutTask":
                 return this.handleGetOutTask(req);
                 break;
-            case 'QueryInTask':
+            case "QueryInTask":
                 return this.handleQueryInTask(req);
                 break;
-            case 'QueryOutTask':
+            case "QueryOutTask":
                 return this.handleQueryOutTask(req);
                 break;
-            case 'InsertInTask':
+            case "InsertInTask":
                 return this.handleInsertInTask(req);
                 break;
-            case 'InsertOutTask':
+            case "InsertOutTask":
                 return this.handleInsertOutTask(req);
                 break;
-            case 'MarkInTask':
+            case "MarkInTask":
                 return this.handleMarkInTask(req);
                 break;
-            case 'MarkOutTask':
+            case "MarkOutTask":
                 return this.handleMarkOutTask(req);
                 break;
-            case 'GetCertainInTask':
+            case "GetCertainInTask":
                 return this.handleGetCertainInTask(req);
                 break;
-            case 'GetCertainOutTask':
+            case "GetCertainOutTask":
                 return this.handleGetCertainOutTask(req);
                 break;
-            case 'DeleteAllInTask':
+            case "DeleteAllInTask":
                 return this.handleDeleteAllInTask(req);
                 break;
-            case 'DeleteAllOutTask':
+            case "DeleteAllOutTask":
                 return this.handleDeleteAllOutTask(req);
                 break;
             default:

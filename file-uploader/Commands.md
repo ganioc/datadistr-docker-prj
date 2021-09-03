@@ -136,9 +136,53 @@ OK
 
 ## addUser
 
+```json
+{
+    "id": 105,
+    "name": "addUser",
+    "data": {
+        "address": "12345",
+        "name": "Mary",
+        "organization": "dianke"
+    }
+}
+{
+    "id": 1051,
+    "name": "addUser",
+    "data": {
+        "address": "234",
+        "name": "Rose",
+        "organization": "dianke"
+    }
+}
+{
+    "id": 1052,
+    "name": "addUser",
+    "data": {
+        "address": "456",
+        "name": "Miona",
+        "organization": "dianke"
+    }
+}
+OK
+
+```
+
 ## getUsers
 
 pagination
+
+```json
+{
+    "id": 106,
+    "name": "getUsers",
+    "data": {
+        "pageOffset": 0,
+        "pageSize": 10
+    }
+}
+OK
+```
 
 ## getUser
 

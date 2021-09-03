@@ -22,10 +22,11 @@ export class ReqDelGroup {
 export class ReqAddUser {
     address: string;
     name: string;
-    organizatioN: string;
+    organization: string;
 }
 export class ReqGetUsers {
-
+    pageOffset: number;
+    pageSize: number;
 }
 export class ReqGetUser {
     address: string;
