@@ -27,6 +27,7 @@ export class AppService {
         const result = await this.groupRepository.findOne({
             groupId: 0,
         });
+        console.log('result: ', result)
         if (!result) {
             const group = new Group();
             group.groupId = 0;
@@ -40,12 +41,12 @@ export class AppService {
     getHello(): string {
         return 'Hello World! file-uploader, to upload a picture.';
     }
-    async checkFileByHashId(hashId: string) {
-        const recordExist = await this.recordOrigRepository.findOne({
-            hashId: hashId,
-        });
-        return {
-            statusCode: recordExist ? StatusCode.OK : StatusCode.UNKNOWN,
-        };
-    }
+    // async checkFileByHashId(hashId: string) {
+    //     const recordExist = await this.recordOrigRepository.findOne({
+    //         hashId: hashId,
+    //     });
+    //     return {
+    //         statusCode: recordExist ? StatusCode.OK : StatusCode.UNKNOWN,
+    //     };
+    // }
 }

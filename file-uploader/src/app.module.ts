@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FileController } from './file/file.controller';
 import { FileService } from './file/file.service';
+import { RpcController } from './rpc/rpc.controller';
+import { RpcService } from './rpc/rpc.service';
 
 const HOST = process.env.HOST ? process.env.HOST : '192.168.0.199';
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5432;
@@ -33,8 +35,8 @@ const PASSWORD = process.env.PASSWORD ? process.env.PASSWORD : 'dianke123';
             },
         }),
     ],
-    controllers: [AppController, FileController],
-    providers: [AppService, FileService],
+    controllers: [AppController, FileController, RpcController],
+    providers: [AppService, FileService, RpcService],
 })
 export class AppModule {
     constructor(private connection: Connection) {
