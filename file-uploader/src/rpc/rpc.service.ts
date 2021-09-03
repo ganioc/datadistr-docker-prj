@@ -5,7 +5,7 @@ import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqDelGroup, ReqDelUser, ReqGetGroup, ReqGetGroups, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -45,6 +45,8 @@ export class RpcService {
         group.alias = data.alias;
         group.level = data.level;
         group.date = new Date();
+        group.users = [];
+        group.recordOrigs = [];
 
         const result = await this.groupRepository.manager.save(group);
         return {
@@ -108,15 +110,23 @@ export class RpcService {
     async handleAddUser(req: RpcReq): Promise<RpcRsp> {
         const data = req.data as ReqAddUser;
 
+
         const user = new User();
         user.address = data.address;
         user.name = data.name;
         user.orgization = data.organization;
         user.date = new Date();
-        const result = await this.userRepository.save(user);
-        if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result])
+        user.groups = [];
+        try {
+            const result = await this.userRepository.save(user);
+            if (result) {
+                return this.makeRpcRsp(req, StatusCode.OK, [result])
+            }
+        } catch (e) {
+            console.log(e)
+            return this.makeRpcRsp(req, StatusCode.FAIL, [])
         }
+
     }
     async handleGetUsers(req: RpcReq): Promise<RpcRsp> {
         const data = req.data as ReqGetUsers;
@@ -140,7 +150,11 @@ export class RpcService {
     }
     async handleGetUser(req: RpcReq): Promise<RpcRsp> {
         const data = req.data as ReqGetUser;
-        const result = await this.userRepository.findOne({ address: data.address })
+        const result = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.groups', 'group')
+            .where("address = :address", { address: data.address })
+            .getOne()
         if (result) {
             return this.makeRpcRsp(req, StatusCode.OK, [result]);
         } else {
@@ -156,6 +170,66 @@ export class RpcService {
         } else {
             return this.makeRpcRsp(req, StatusCode.UNKNOWN, []);
         }
+    }
+    async handleAddUserToGroup(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqAddUserToGroup;
+
+        const user = await this.userRepository.findOne({ address: data.address });
+        if (!user) {
+            console.log("not found:", data.address)
+            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+        }
+        console.log('user', user)
+        const group = await this.groupRepository
+            .createQueryBuilder('group')
+            .leftJoinAndSelect('group.users', 'user')
+            .where("group.groupId = :id", { id: data.groupId })
+            .getOne();
+        if (!group) {
+            console.log("not found:", data.groupId);
+            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+        }
+
+        // group.users.push(user);
+        group.users = group.users ? group.users : [];
+        group.users.push(user);
+
+        const result = await this.groupRepository.manager.save(group);
+        console.log("result:", result);
+        if (group) {
+            return this.makeRpcRsp(req, StatusCode.OK, [group])
+        } else {
+            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+        }
+    }
+    async handleDelUserFromGroup(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqDelUserFromGroup;
+        const user = await this.userRepository.findOne({ address: data.address });
+        if (!user) {
+            console.log("not found:", data.address)
+            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+        }
+        const group = await this.groupRepository
+            .createQueryBuilder('group')
+            .leftJoinAndSelect('group.users', 'user')
+            .where("group.groupId = :id", { id: data.groupId })
+            .getOne();
+
+        if (!group) {
+            console.log("not found:", data.groupId);
+            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+        }
+        group.users = group.users ? group.users : [];
+        group.users = group.users.filter((item) => {
+            user.address !== item.address
+        })
+        const result = await this.groupRepository.manager.save(group);
+        if (result) {
+            return this.makeRpcRsp(req, StatusCode.OK, [result])
+        } else {
+            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+        }
+
     }
     async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
         return {
@@ -193,6 +267,12 @@ export class RpcService {
                     break;
                 case "delUser":
                     return this.handleDelUser(req);
+                    break;
+                case "addUserToGroup":
+                    return this.handleAddUserToGroup(req);
+                    break;
+                case "delUserFromGroup":
+                    return this.handleDelUserFromGroup(req);
                     break;
                 default:
                     break;

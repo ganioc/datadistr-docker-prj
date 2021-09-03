@@ -212,7 +212,29 @@ by address
 
 ## addUserToGroup
 
+```json
+{
+    "id": 107,
+    "name": "addUserToGroup",
+    "data": {
+        "address": "2",
+        "groupId":
+    }
+}
+```
+
 ## delUserFromGroup
+
+```json
+{
+    "id": 107,
+    "name": "addUserToGroup",
+    "data": {
+        "address": "2",
+        "groupId":
+    }
+}
+```
 
 ## getRecords
 
