@@ -99,7 +99,7 @@ export class RpcService {
 
         const [result, num] = await this.connection
             .createQueryBuilder(User, 'user')
-            .leftJoin('user.groups', 'group', "group.groupId = :groupId", { groupId: data.groupId })
+            .innerJoin('user.groups', 'group', "group.groupId = :groupId", { groupId: data.groupId })
             .limit(size)
             .skip(offset)
             .getManyAndCount();
