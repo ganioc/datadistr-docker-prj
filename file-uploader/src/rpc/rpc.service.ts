@@ -5,7 +5,7 @@ import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetRecord, ReqGetRecords, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelRecordCopy, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetRecord, ReqGetRecordCopy, ReqGetRecordCopys, ReqGetRecords, ReqGetUser, ReqGetUsers, ReqInsertRecordCopy, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -231,7 +231,7 @@ export class RpcService {
 
         const result = await this.groupRepository.manager.save(group);
         console.log("result:", result);
-        if (group) {
+        if (result) {
             return this.makeRpcRsp(req, StatusCode.OK, [])
         } else {
             return this.makeRpcRsp(req, StatusCode.FAIL, [])
@@ -293,7 +293,6 @@ export class RpcService {
             .createQueryBuilder('recordOrig')
             .where("recordOrig.hashId = :hashId", { hashId: data.hashId })
             .leftJoinAndSelect('recordOrig.groups', 'group')
-            .leftJoinAndSelect('recordOrig.recordCopys', 'recordCopy')
             .getOne();
         console.log(result);
         if (result) {
@@ -302,6 +301,85 @@ export class RpcService {
             return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
         }
 
+    }
+    async handleGetRecordCopys(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqGetRecordCopys;
+
+        const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+
+        const [result, num] = await this.recordCopyRepository
+            .createQueryBuilder()
+            .limit(size)
+            .skip(offset)
+            .getManyAndCount();
+        console.log(result);
+
+        return this.makeRpcRsp(req, StatusCode.OK, {
+            pageOffset: offset,
+            pageSize: size,
+            total: num,
+            data: result
+        })
+    }
+    async handleInsertRecordCopy(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqInsertRecordCopy;
+
+        const recordCopy = await this.recordCopyRepository
+            .findOne({
+                hashId: data.hashId,
+                groupId: data.groupId
+            })
+        if (recordCopy) {
+            return this.makeRpcRsp(req, StatusCode.EXIST, [])
+        }
+
+        const result = await this.recordOrigRepository
+            .findOne({ hashId: data.hashId })
+
+        if (!result) {
+            return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
+        }
+        const copy = new RecordCopy();
+        copy.hashId = data.hashId;
+        copy.newFileName = data.newFileName;
+        copy.newHashId = data.newHashId;
+        copy.secret = data.secret;
+        copy.date = new Date();
+        copy.groupId = data.groupId;
+
+        const result1 = await this.connection.manager.save(copy);
+        if (result1) {
+            return this.makeRpcRsp(req, StatusCode.OK, [result1])
+        } else {
+            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+        }
+    }
+    async handleDelRecordCopy(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqDelRecordCopy;
+
+        const result = await this.recordCopyRepository
+            .delete({ hashId: data.hashId, groupId: data.groupId })
+        console.log(result);
+
+        if (result.affected > 0) {
+            return this.makeRpcRsp(req, StatusCode.OK, [])
+        } else {
+            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+        }
+    }
+    async handleGetRecordCopy(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqGetRecordCopy;
+
+        const result = await this.recordCopyRepository
+            .findOne({ hashId: data.hashId, groupId: data.groupId })
+        console.log(result);
+
+        if (result) {
+            return this.makeRpcRsp(req, StatusCode.OK, [result])
+        } else {
+            return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
+        }
     }
     async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
         return {
@@ -354,6 +432,18 @@ export class RpcService {
                     break;
                 case "getRecord":
                     return this.handleGetRecord(req);
+                    break;
+                case "getRecordCopys":
+                    return this.handleGetRecordCopys(req);
+                    break;
+                case "insertRecordCopy":
+                    return this.handleInsertRecordCopy(req);
+                    break;
+                case "delRecordCopy":
+                    return this.handleDelRecordCopy(req);
+                    break;
+                case "getRecordCopy":
+                    return this.handleGetRecordCopy(req);
                     break;
                 default:
                     break;

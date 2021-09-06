@@ -1,5 +1,5 @@
 
-export type ReqType = "addGroup" | "getGroups" | "delGroup" | "getGroup" | "getGroupUsers" | "addUser" | "getUsers" | "getUser" | "delUser" | "addUserToGroup" | "delUserFromGroup" | "getRecords" | "getRecord" | "getRecordCopys" | "insertRecordCopy" | "delRecordCopy";
+export type ReqType = "addGroup" | "getGroups" | "delGroup" | "getGroup" | "getGroupUsers" | "addUser" | "getUsers" | "getUser" | "delUser" | "addUserToGroup" | "delUserFromGroup" | "getRecords" | "getRecord" | "getRecordCopys" | "insertRecordCopy" | "delRecordCopy" | "getRecordCopy";
 
 export type RspType = ReqType;
 export const DEFAULT_GROUP = 0;
@@ -56,7 +56,8 @@ export class ReqGetRecord {
     hashId: string;
 }
 export class ReqGetRecordCopys {
-    hashId: string;
+    pageOffset: number;
+    pageSize: number;
 }
 export class ReqInsertRecordCopy {
     hashId: string;
@@ -66,6 +67,10 @@ export class ReqInsertRecordCopy {
     groupId: number;
 }
 export class ReqDelRecordCopy {
+    hashId: string;
+    groupId: number;
+}
+export class ReqGetRecordCopy {
     hashId: string;
     groupId: number;
 }
@@ -90,6 +95,7 @@ export class RpcReq {
         | ReqGetRecordCopys
         | ReqInsertRecordCopy
         | ReqDelRecordCopy
+        | ReqGetRecordCopy
         ;
 }
 export class RspGroup {
@@ -146,6 +152,7 @@ export type RpcRspData =
     | RspUserPagination
     | RspRecordPagination
     | RspRecordCopyPagination
+
 
 export class RpcRsp {
     id: number;

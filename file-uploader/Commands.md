@@ -277,6 +277,7 @@ pagination
 ## getRecord
 
 QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD
+hashId": "QmceAfwiW34EnqhuKCiRG8YByi8nPP431owpV2xKKJdwVQ",
 by hashId
 
 ```json
@@ -291,6 +292,58 @@ by hashId
 
 ## getRecordCopys
 
+```json
+{
+    "id": 203,
+    "name": "getRecordCopys",
+    "data": {
+        "pageOffset": 0,
+        "pageSize": 10
+    }
+}
+```
+
 ## insertRecordCopy
 
+```json
+{
+    "id": 204,
+    "name": "insertRecordCopy",
+    "data": {
+        "hashId": "QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD",
+        "newFileName": "newjoker.jpeg",
+        "newHashId": "newHashQmZCA",
+        "secret": "1234",
+        "groupId": 0
+    }
+}
+Feedback
+{
+    "id": 205,
+    "name": "insertRecordCopy",
+    "statusCode": 0,
+    "data": [
+        {
+            "hashId": "QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD",
+            "newFileName": "newjoker.jpeg",
+            "newHashId": "newHashQmZCA",
+            "secret": "1234",
+            "date": "2021-09-06T09:48:27.159Z",
+            "groupId": 0,
+            "id": 1
+        }
+    ]
+```
+
 ## delRecordCopy
+
+```json
+{
+    "id": 206,
+    "name": "delRecordCopy",
+    "data": {
+        "hashId": "QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD",
+        "groupId": 0
+    }
+}
+```

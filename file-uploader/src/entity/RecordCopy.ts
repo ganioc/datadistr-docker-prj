@@ -14,6 +14,10 @@ export class RecordCopy {
 
     @Index()
     @Column()
+    hashId: string;
+
+    @Index()
+    @Column()
     newFileName: string;
 
     @Column()
@@ -27,7 +31,4 @@ export class RecordCopy {
 
     @Column()
     groupId: number;
-
-    @ManyToOne((type) => RecordOrig, (recordOrig) => recordOrig.recordCopys)
-    recordOrig: RecordOrig;
 }

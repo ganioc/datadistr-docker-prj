@@ -31,10 +31,6 @@ export class RecordOrig {
     @Column()
     date: Date;
 
-    // eslint-disable-next-line prettier/prettier
-    @OneToMany(type => RecordCopy, recordCopy => recordCopy.recordOrig)
-    recordCopys: RecordCopy[];
-
     @ManyToMany((_type) => Group, (group) => group.recordOrigs)
     groups: Group[];
 }
