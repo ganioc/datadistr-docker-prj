@@ -276,7 +276,18 @@ pagination
 
 ## getRecord
 
+QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD
 by hashId
+
+```json
+{
+    "id": 202,
+    "name": "getRecord",
+    "data": {
+        "hashId": "QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD"
+    }
+}
+```
 
 ## getRecordCopys
 

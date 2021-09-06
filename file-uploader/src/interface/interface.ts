@@ -99,8 +99,6 @@ export class RspUser {
 
 }
 export class RspRecord {
-
-
 }
 export class RspRecordCopy {
 
