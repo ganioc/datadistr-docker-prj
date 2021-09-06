@@ -5,7 +5,7 @@ import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetRecords, ReqGetUser, ReqGetUsers, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -266,6 +266,26 @@ export class RpcService {
         }
 
     }
+    async handleGetRecords(req: RpcReq): Promise<RpcRsp> {
+        const data = req.data as ReqGetRecords;
+
+        const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+
+        const [result, num] = await this.recordOrigRepository
+            .createQueryBuilder()
+            .limit(size)
+            .skip(offset)
+            .getManyAndCount();
+        console.log(result);
+
+        return this.makeRpcRsp(req, StatusCode.OK, {
+            pageOffset: offset,
+            pageSize: size,
+            total: num,
+            data: result
+        })
+    }
     async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
         return {
             id: req.id,
@@ -311,6 +331,9 @@ export class RpcService {
                     break;
                 case "delUserFromGroup":
                     return this.handleDelUserFromGroup(req);
+                    break;
+                case "getRecords":
+                    return this.handleGetRecords(req);
                     break;
                 default:
                     break;

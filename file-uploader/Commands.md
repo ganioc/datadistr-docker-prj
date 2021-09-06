@@ -201,6 +201,7 @@ OK
 ## getUser
 
 by address
+, 12345, 234, 456,
 
 ```json
 {
@@ -261,6 +262,17 @@ by address
 ## getRecords
 
 pagination
+
+```json
+{
+    "id": 201,
+    "name": "getRecords",
+    "data": {
+        "pageOffset": 0,
+        "pageSize": 10
+    }
+}
+```
 
 ## getRecord
 

@@ -49,7 +49,8 @@ export class ReqDelUserFromGroup {
     groupId: number;
 }
 export class ReqGetRecords {
-
+    pageOffset: number;
+    pageSize: number;
 }
 export class ReqGetRecord {
     hashId: string;
@@ -98,6 +99,7 @@ export class RspUser {
 
 }
 export class RspRecord {
+
 
 }
 export class RspRecordCopy {
