@@ -11,7 +11,7 @@ import { RpcService } from './rpc/rpc.service';
 const HOST = process.env.HOST ? process.env.HOST : '192.168.0.199';
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5432;
 const USERNAME = process.env.USERNAME ? process.env.USERNAME : 'john';
-const DBNAME = process.env.PASSWORD ? process.env.PASSWORD : 'db';
+const DBNAME = process.env.DBNAME ? process.env.DBNAME : 'db';
 const PASSWORD = process.env.PASSWORD ? process.env.PASSWORD : 'dianke123';
 
 @Module({
