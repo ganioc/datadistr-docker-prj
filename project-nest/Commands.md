@@ -1,22 +1,38 @@
-
 ## Commands
+
+Upgrate it to JSON RPC 2.0 standard.
+
+### Return Error Code
+
+```
+code	message	meaning
+-32700	Parse error	Invalid JSON was received by the server.
+An error occurred on the server while parsing the JSON text.
+-32600	Invalid Request	The JSON sent is not a valid Request object.
+-32601	Method not found	The method does not exist / is not available.
+-32602	Invalid params	Invalid method parameter(s).
+-32603	Internal error	Internal JSON-RPC error.
+-32000 to -32099	Server error	Reserved for implementation-defined server-errors.
+```
 
 ```json
 {
     "id": 31,
     "name": "GetInTask",
-    "data":{}
+    "data": {}
 }
-
-
 ```
 
 ```json
-{"id":32,"name":"QueryOutTask","data":{"pageOffset":0, "pageSize":10,"finished":true, "all":true}}
-
+{
+    "id": 32,
+    "name": "QueryOutTask",
+    "data": {"pageOffset": 0, "pageSize": 10, "finished": true, "all": true}
+}
 ```
 
 ## InsertInTask
+
 ```json
 
 {
@@ -109,7 +125,7 @@
                 "encryptSecret": "asdfsdafasdf",
                 "oldHashId": "xxx",
                 "newHashId": "yyy"
-            } 
+            }
 }
 {
     "id":332,
@@ -124,7 +140,7 @@
                 "encryptSecret": "asdfsdafasdf",
                 "oldHashId": "xxx",
                 "newHashId": "yyy"
-            } 
+            }
 }
 {
     "id":333,
@@ -139,7 +155,7 @@
                 "encryptSecret": "asdfsdafasdf",
                 "oldHashId": "xxx",
                 "newHashId": "yyy"
-            } 
+            }
 }
 {
     "id":334,
@@ -154,27 +170,32 @@
                 "encryptSecret": "asdfsdafasdf",
                 "oldHashId": "xxx",
                 "newHashId": "yyy"
-            } 
+            }
 }
 ```
-## GetInTask
-```json
-{
-    "id":301,
-    "name":"GetInTask",
-    "data":{}
-}
-```
-## GetOutTask
-```json
-{
-    "id":401,
-    "name":"GetOutTask",
-    "data":{}
-}
 
+## GetInTask
+
+```json
+{
+    "id": 301,
+    "name": "GetInTask",
+    "data": {}
+}
 ```
+
+## GetOutTask
+
+```json
+{
+    "id": 401,
+    "name": "GetOutTask",
+    "data": {}
+}
+```
+
 ## QueryInTask
+
 ```json
 {
     "id":501,
@@ -217,8 +238,10 @@
     }
 }
 ```
+
 ## QueryOutTask
-```json
+
+````json
 {
     "id":601,
     "name":"QueryOutTask",
@@ -240,67 +263,70 @@
     "id":332,
     "name":"MarkInTask",
     "data":{
-        "block": 9, 
+        "block": 9,
         "txIndex": 0
-    } 
+    }
 }
-```
+````
+
 ## MaskOutTask
 
 ```json
-
 {
-    "id":312,
-    "name":"MarkOutTask",
-    "data":{
-        "block": 5, 
+    "id": 312,
+    "name": "MarkOutTask",
+    "data": {
+        "block": 5,
         "txIndex": 0
-    } 
+    }
 }
 ```
-## GetCertainInTask
-```json
 
+## GetCertainInTask
+
+```json
 {
-    "id":712,
-    "name":"GetCertainInTask",
-    "data":{
-        "block": 8, 
+    "id": 712,
+    "name": "GetCertainInTask",
+    "data": {
+        "block": 8,
         "txIndex": 0
-    } 
+    }
 }
 ```
 
 ## GetCertainOutTask
+
 ```json
 {
-    "id":712,
-    "name":"GetCertainOutTask",
-    "data":{
-        "block": 2, 
+    "id": 712,
+    "name": "GetCertainOutTask",
+    "data": {
+        "block": 2,
         "txIndex": 0
-    } 
+    }
 }
-
 ```
 
 ## DeleteAllInTask, DeleteAllOutTask
+
 ```json
 {
     "id":812,
     "name":"DeleteAllInTask",
-    "data":{} 
+    "data":{}
 }
 
 {
     "id":813,
     "name":"DeleteAllOutTask",
-    "data":{} 
+    "data":{}
 }
 
 ```
 
 ## Cats
+
 ```json
 {
     "name": "Mew",
@@ -308,22 +334,21 @@
     "breed": "noble"
 }
 ```
+
 ## tasks
 
-- /tasks/intask/
-- /tasks/outtask/
+-   /tasks/intask/
+-   /tasks/outtask/
 
-- post /tasks/rpc/v1/
+-   post /tasks/rpc/v1/
 
 ```json
-
 {
     "id": 31,
     "name": "GetInTask",
-    "data":{}
+    "data": {}
 }
 ```
-
 
 ## temp records
 

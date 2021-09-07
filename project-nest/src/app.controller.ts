@@ -1,7 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { AppService } from './app.service';
-import { handleReq } from './method/handle';
-import { RpcReq, RpcRsp } from './model/reqrsp.dto';
+import { Controller, Get } from "@nestjs/common";
+import { AppService } from "./app.service";
 @Controller()
 export class AppController {
     constructor(private readonly appService: AppService) { }
@@ -11,9 +9,9 @@ export class AppController {
         return this.appService.getHello();
     }
 
-    @Get('intask')
+    @Get("intask")
     getInTask(): string {
-        return 'intask details';
+        return "intask details";
     }
 
     // @Get(':id')
@@ -21,10 +19,10 @@ export class AppController {
     //     console.log(params.id);
     //     return `This action returns a #${params.id} cat`;
     // }
-    @Post('rpc/v1/')
-    async handleRpc(@Body() req: RpcReq): Promise<RpcRsp | any> {
-        console.log(req);
+    // @Post("rpc/v1/")
+    // async handleRpc(@Body() req: RpcReq): Promise<RpcRsp | any> {
+    //     console.log(req);
 
-        return await handleReq(req);
-    }
+    //     return await handleReq(req);
+    // }
 }

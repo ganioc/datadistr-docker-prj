@@ -1,4 +1,4 @@
-import { InTaskModel } from 'src/entity/InTaskModel';
+import { InTaskModel } from "src/entity/InTaskModel";
 import { OutTaskModel } from 'src/entity/OutTaskModel';
 import { StatusOutTask, TaskType } from './type';
 
@@ -67,9 +67,10 @@ export class OutTask {
 //////////////////////////////////
 export class RpcReq {
     id: number;
-    name: TaskType;
-    data:
-        | null
+    jsonrpc: "2.0";
+    method: TaskType;
+    params:
+        | []
         | InTask
         | OutTask
         | MarkInTask
@@ -81,16 +82,33 @@ export class RpcReq {
 
 export class RpcRsp {
     id: number;
-    name: TaskType;
-    statusCode: number;
-    data: InTask[] | OutTask[] | QueryInTaskRsp | QueryOutTaskRsp;
+    jsonrpc: "2.0";
+    result: {
+        name: TaskType;
+        data: InTask[] | OutTask[] | QueryInTaskRsp | QueryOutTaskRsp;
+    };
+}
+export class RpcRspErr {
+    id: number;
+    jsonrpc: "2.0";
+    error: {
+        code: RpcStatusCode;
+        message: string;
+        data: [];
+    };
 }
 export enum RpcStatusCode {
     OK = 0,
-    UNKNOWN = 1,
-    WRONG_ARG = 2,
-    FAIL = 3,
-    EXIST = 4,
+    /* user defined error */
+    EXIST = -32000,
+    DB_FAIL = -32001,
+    EMPTY = -32002,
+    /*  end of user defined */
+    PARSE_ERROR = -32700,
+    INVALID_REQUEST = -32600,
+    METHOD_NOT_FOUND = -32601,
+    INVALID_PARAMS = -32602,
+    INTERNAL_ERROR = -32603,
 }
 
 export function transInTaskModel(task: InTaskModel): InTask {

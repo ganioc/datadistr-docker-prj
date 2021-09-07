@@ -27,7 +27,7 @@ module.exports = {
       {
         "endOfLine": "auto",
         "tabWidth": 4,
-        "space-in-brackets": "never"
+        "bracketSpacing": true
       }
     ]
   },

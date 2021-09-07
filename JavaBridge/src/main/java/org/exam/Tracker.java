@@ -1,5 +1,9 @@
 package org.exam;
 
+import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
+
+import java.net.URL;
+
 public class Tracker {
     private static String HOST;
     private static int PORT;
@@ -13,9 +17,26 @@ public class Tracker {
         String envPort = System.getenv("PORT") ;
         PORT = (envPort == null)?3000:Integer.valueOf(envPort);
         String envUrl = System.getenv("URL");
-        URL = (envUrl == null)?"/":envUrl;
+        URL = (envUrl == null)?"/rpc/v1/":envUrl;
 
         System.out.printf("Host: %s\nPort: %s\nUrl: %s\n", HOST, String.valueOf(PORT), URL);
+        try{
+            StringBuilder url = new StringBuilder();
+            url.append("http://");
+            url.append(HOST);
+            url.append(":").append(PORT).append(URL);
+
+            java.net.URL serverURL = new URL(url.toString());
+
+            // Create new JSON-RPC 2.0 client session
+            JSONRPC2Session mySession = new JSONRPC2Session(serverURL);
+
+
+        }catch (Exception e){
+            System.out.println("Wrong URL");
+            System.out.println("Wrong URL");
+        }
+
 
         Thread task = new Thread(new Runnable() {
             @Override

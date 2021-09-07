@@ -1,27 +1,27 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { RpcReq, RpcRsp } from './model/reqrsp.dto';
+import { Body, Controller, Get, Post } from "@nestjs/common";
+import { RpcReq, RpcRsp, RpcRspErr } from "./model/reqrsp.dto";
 // import { InTaskService } from './inTask.service';
 // import { OutTaskService } from './outTask.service';
-import { TasksService } from './tasks.service';
+import { TasksService } from "./tasks.service";
 
-@Controller('tasks')
+@Controller("tasks")
 export class TasksController {
     constructor(private tasksService: TasksService) { }
 
-    @Get('intask')
+    @Get("intask")
     findInTask() {
-        console.log('get intask');
+        console.log("get intask");
         // return 'get intask';
         return this.tasksService.findAllInTask();
     }
-    @Post('rpc/v1/')
-    async apiRpc(@Body() req: RpcReq): Promise<RpcRsp> {
+    @Post("rpc/v2/")
+    async apiRpc(@Body() req: RpcReq): Promise<RpcRsp | RpcRspErr> {
         console.log(req);
         return this.tasksService.apiRpcV1(req);
     }
-    @Get('outtask')
+    @Get("outtask")
     findOutTask() {
-        console.log('get outTask');
+        console.log("get outTask");
         return this.tasksService.findAllOutTask();
     }
 }

@@ -12,6 +12,7 @@ import {
     QueryOutTask,
     RpcReq,
     RpcRsp,
+    RpcRspErr,
     RpcStatusCode,
     transInTaskModel,
     transOutTaskModel,
@@ -71,13 +72,40 @@ export class TasksService {
     async existOutTask(block: number, txIndex: number): Promise<boolean> {
         return this.exist(this.outTaskModelRepository, block, txIndex);
     }
-    async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
+    makeRspV2(req: RpcReq, data: any): RpcRsp {
         return {
             id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.UNKNOWN,
-            data: [],
+            jsonrpc: "2.0",
+            result: {
+                name: req.method,
+                data: data,
+            },
         };
+    }
+    makeRspErrV2(
+        req: RpcReq,
+        code: number,
+        message: string,
+        data: any,
+    ): RpcRspErr {
+        return {
+            id: req.id,
+            jsonrpc: "2.0",
+            error: {
+                code: code,
+                message: message,
+                data: data,
+            },
+        };
+    }
+    async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
+        return this.makeRspV2(req, []);
+        // return {
+        //     id: req.id,
+        //     name: req.name,
+        //     statusCode: RpcStatusCode.UNKNOWN,
+        //     data: [],
+        // };
     }
     async handleGetInTask(req: RpcReq): Promise<RpcRsp> {
         const result = await this.inTaskModelRepository.findOne({
@@ -87,12 +115,10 @@ export class TasksService {
         console.log("handleGetInTask");
         console.log(result);
 
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: result !== undefined ? [transInTaskModel(result)] : [],
-        };
+        return this.makeRspV2(
+            req,
+            result !== undefined ? [transInTaskModel(result)] : [],
+        );
     }
     async handleGetOutTask(req: RpcReq): Promise<RpcRsp> {
         const result = await this.outTaskModelRepository.findOne({
@@ -102,15 +128,13 @@ export class TasksService {
         console.log("handleGetOutTask");
         console.log(result);
 
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: result !== undefined ? [transOutTaskModel(result)] : [],
-        };
+        return this.makeRspV2(
+            req,
+            result !== undefined ? [transOutTaskModel(result)] : [],
+        );
     }
     async handleQueryInTask(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as QueryInTask;
+        const data = req.params as QueryInTask;
 
         const queryString: any = {
             take: data.pageSize <= 30 ? data.pageSize : 30,
@@ -129,25 +153,20 @@ export class TasksService {
         console.log("result:", result);
         console.log("num:", num);
 
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: {
-                pageOffset: data.pageOffset,
-                pageSize: data.pageSize,
-                total: num,
-                finished: data.finished,
-                all: data.all,
-                data:
-                    result.length <= 0
-                        ? []
-                        : result.map((item) => transInTaskModel(item)),
-            },
-        };
+        return this.makeRspV2(req, {
+            pageOffset: data.pageOffset,
+            pageSize: data.pageSize,
+            total: num,
+            finished: data.finished,
+            all: data.all,
+            data:
+                result.length <= 0
+                    ? []
+                    : result.map((item) => transInTaskModel(item)),
+        });
     }
     async handleQueryOutTask(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as QueryOutTask;
+        const data = req.params as QueryOutTask;
 
         const queryString: any = {
             take: data.pageSize <= 30 ? data.pageSize : 30,
@@ -166,26 +185,21 @@ export class TasksService {
         console.log("result:", result);
         console.log("num:", num);
 
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: {
-                pageOffset: data.pageOffset,
-                pageSize: data.pageSize,
-                total: num,
-                finished: data.finished,
-                all: data.all,
-                data:
-                    result.length <= 0
-                        ? []
-                        : result.map((item) => transOutTaskModel(item)),
-            },
-        };
+        return this.makeRspV2(req, {
+            pageOffset: data.pageOffset,
+            pageSize: data.pageSize,
+            total: num,
+            finished: data.finished,
+            all: data.all,
+            data:
+                result.length <= 0
+                    ? []
+                    : result.map((item) => transOutTaskModel(item)),
+        });
     }
-    async handleInsertInTask(req: RpcReq): Promise<RpcRsp> {
+    async handleInsertInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
         console.log("handleInsertInTask");
-        const data = req.data as InTask;
+        const data = req.params as InTask;
 
         const task: InTaskModel = new InTaskModel();
         task.finished = data.finished;
@@ -199,28 +213,31 @@ export class TasksService {
         const check = await this.existInTask(data.block, data.txIndex);
 
         if (check) {
-            return {
-                id: req.id,
-                name: req.name,
-                statusCode: RpcStatusCode.EXIST,
-                data: [],
-            };
+            return this.makeRspErrV2(
+                req,
+                RpcStatusCode.EXIST as number,
+                "Exists",
+                [],
+            );
         }
 
         const result = await this.connection.manager.save(task);
         console.log("result: ", result);
 
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode:
-                result.id !== undefined ? RpcStatusCode.OK : RpcStatusCode.FAIL,
-            data: [data],
-        };
+        if (result.id !== undefined) {
+            return this.makeRspV2(req, [data]);
+        } else {
+            return this.makeRspErrV2(
+                req,
+                RpcStatusCode.DB_FAIL,
+                "Save task to db",
+                [],
+            );
+        }
     }
-    async handleInsertOutTask(req: RpcReq): Promise<RpcRsp> {
+    async handleInsertOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
         const task: OutTaskModel = new OutTaskModel();
-        const data = req.data as OutTask;
+        const data = req.params as OutTask;
 
         task.finished = data.finished;
         task.id = new Date().getTime();
@@ -236,28 +253,26 @@ export class TasksService {
         const check = await this.existOutTask(data.block, data.txIndex);
 
         if (check) {
-            return {
-                id: req.id,
-                name: req.name,
-                statusCode: RpcStatusCode.EXIST,
-                data: [data],
-            };
+            return this.makeRspErrV2(req, RpcStatusCode.EXIST, "Exist", [data]);
         }
         console.log("task:", task);
 
         const result = await this.connection.manager.save(task);
         console.log("result: ", result);
 
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode:
-                result.id !== undefined ? RpcStatusCode.OK : RpcStatusCode.FAIL,
-            data: [],
-        };
+        if (result.id !== undefined) {
+            return this.makeRspV2(req, []);
+        } else {
+            return this.makeRspErrV2(
+                req,
+                RpcStatusCode.DB_FAIL,
+                "Save db fail",
+                [],
+            );
+        }
     }
-    async handleMarkInTask(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as MarkInTask;
+    async handleMarkInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as MarkInTask;
 
         const result = await this.inTaskModelRepository.findOneAndUpdate(
             {
@@ -267,16 +282,10 @@ export class TasksService {
             { $set: { finished: true } },
         );
         console.log("result", result);
-
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: [],
-        };
+        return this.makeRspV2(req, []);
     }
-    async handleMarkOutTask(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as MarkOutTask;
+    async handleMarkOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as MarkOutTask;
 
         const result = await this.outTaskModelRepository.findOneAndUpdate(
             {
@@ -286,67 +295,47 @@ export class TasksService {
             { $set: { finished: true } },
         );
         console.log("result", result);
-
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: [],
-        };
+        return this.makeRspV2(req, []);
     }
-    async handleGetCertainInTask(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as GetTask;
+    async handleGetCertainInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as GetTask;
 
         const result = await this.inTaskModelRepository.findOne({
             block: data.block,
             txIndex: data.txIndex,
         });
-
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: result ? [transInTaskModel(result)] : [],
-        };
+        if (result) {
+            return this.makeRspV2(req, [transInTaskModel(result)]);
+        } else {
+            return this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Empty", []);
+        }
     }
-    async handleGetCertainOutTask(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as GetTask;
+    async handleGetCertainOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as GetTask;
 
         const result = await this.outTaskModelRepository.findOne({
             block: data.block,
             txIndex: data.txIndex,
         });
-
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: result ? [transOutTaskModel(result)] : [],
-        };
+        if (result) {
+            return this.makeRspV2(req, [transOutTaskModel(result)]);
+        } else {
+            return this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Empty", []);
+        }
     }
     async handleDeleteAllInTask(req: RpcReq): Promise<RpcRsp> {
         await this.inTaskModelRepository.deleteMany({});
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: [],
-        };
+        return this.makeRspV2(req, []);
     }
     async handleDeleteAllOutTask(req: RpcReq): Promise<RpcRsp> {
         await this.outTaskModelRepository.deleteMany({});
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: RpcStatusCode.OK,
-            data: [],
-        };
+        return this.makeRspV2(req, []);
     }
-    async apiRpcV1(req: RpcReq): Promise<RpcRsp | null> {
+    async apiRpcV1(req: RpcReq): Promise<RpcRsp | RpcRspErr | null> {
         // console.log('id:', req.id);
         // console.log('name:', req.name);
 
-        switch (req.name) {
+        switch (req.method) {
             // Only return one task
             case "GetInTask":
                 return this.handleGetInTask(req);
