@@ -98,8 +98,14 @@ export class TasksService {
             },
         };
     }
-    async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
-        return this.makeRspV2(req, []);
+    async handleUnknownReq(req: RpcReq): Promise<RpcRspErr> {
+        // return this.makeRspV2(req, []);
+        return this.makeRspErrV2(
+            req,
+            RpcStatusCode.METHOD_NOT_FOUND,
+            "Unknown " + req.method,
+            [],
+        );
         // return {
         //     id: req.id,
         //     name: req.name,
@@ -304,6 +310,7 @@ export class TasksService {
             block: data.block,
             txIndex: data.txIndex,
         });
+        console.log(result);
         if (result) {
             return this.makeRspV2(req, [transInTaskModel(result)]);
         } else {
@@ -317,6 +324,7 @@ export class TasksService {
             block: data.block,
             txIndex: data.txIndex,
         });
+        console.log(result);
         if (result) {
             return this.makeRspV2(req, [transOutTaskModel(result)]);
         } else {

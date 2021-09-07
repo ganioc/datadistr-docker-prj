@@ -2,6 +2,8 @@
 
 Upgrate it to JSON RPC 2.0 standard.
 
+http://127.0.0.1:3000/tasks/rpc/v2/
+
 ### Return Error Code
 
 ```
@@ -18,16 +20,43 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id": 31,
-    "name": "GetInTask",
-    "data": {}
+    "jsonrpc": "2.0",
+    "method": "GetInTask",
+    "params": {}
+}
+Feedback,
+{
+    "id": 31,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "GetInTask",
+        "data": []
+    }
 }
 ```
 
 ```json
 {
     "id": 32,
-    "name": "QueryOutTask",
-    "data": {"pageOffset": 0, "pageSize": 10, "finished": true, "all": true}
+    "jsonrpc": "2.0",
+    "method": "QueryOutTask",
+    "params": {"pageOffset": 0, "pageSize": 10, "finished": true, "all": true}
+}
+Feedback,
+{
+    "id": 32,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "QueryOutTask",
+        "data": {
+            "pageOffset": 0,
+            "pageSize": 10,
+            "total": 0,
+            "finished": true,
+            "all": true,
+            "data": []
+        }
+    }
 }
 ```
 
@@ -37,8 +66,9 @@ An error occurred on the server while parsing the JSON text.
 
 {
     "id":10,
-    "name":"InsertInTask",
-    "data":{
+    "jsonrpc": "2.0",
+    "method":"InsertInTask",
+    "params":{
         "finished": false,
         "block": 1,
         "txIndex": 0,
@@ -47,6 +77,25 @@ An error occurred on the server while parsing the JSON text.
         "hashId": "asdfsdafasdf"
     }
 }
+Feedback,
+{
+    "id": 10,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "InsertInTask",
+        "data": [
+            {
+                "finished": false,
+                "block": 1,
+                "txIndex": 0,
+                "address": "0xasf",
+                "pubKey": "xsdfdf",
+                "hashId": "asdfsdafasdf"
+            }
+        ]
+    }
+}
+
 {
     "id":13,
     "name":"InsertInTask",
@@ -114,8 +163,9 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id":332,
-    "name":"InsertOutTask",
-    "data":{
+    "jsonrpc": "2.0",
+    "method":"InsertOutTask",
+    "params":{
                 "finished": false,
                 "block": 1,
                 "txIndex": 0,
@@ -127,6 +177,16 @@ An error occurred on the server while parsing the JSON text.
                 "newHashId": "yyy"
             }
 }
+Feedback,
+{
+    "id": 332,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "InsertOutTask",
+        "data": []
+    }
+}
+
 {
     "id":332,
     "name":"InsertOutTask",
@@ -179,8 +239,27 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id": 301,
-    "name": "GetInTask",
-    "data": {}
+    "jsonrpc": "2.0",
+    "method": "GetInTask",
+    "params": {}
+}
+Feedback,
+{
+    "id": 301,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "GetInTask",
+        "data": [
+            {
+                "finished": false,
+                "block": 1,
+                "txIndex": 0,
+                "address": "0xasf",
+                "pubKey": "xsdfdf",
+                "hashId": "asdfsdafasdf"
+            }
+        ]
+    }
 }
 ```
 
@@ -189,8 +268,30 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id": 401,
-    "name": "GetOutTask",
-    "data": {}
+    "jsonrpc": "2.0",
+    "method": "GetOutTask",
+    "params": {}
+}
+Feedback,
+{
+    "id": 401,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "GetOutTask",
+        "data": [
+            {
+                "finished": false,
+                "block": 1,
+                "txIndex": 0,
+                "address": "0xasf",
+                "pubKey": "xsdfdf",
+                "status": "succeed",
+                "encryptSecret": "asdfsdafasdf",
+                "oldHashId": "xxx",
+                "newHashId": "yyy"
+            }
+        ]
+    }
 }
 ```
 
@@ -199,14 +300,41 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id":501,
-    "name":"QueryInTask",
-    "data":{
+    "jsonrpc": "2.0",
+    "method":"QueryInTask",
+    "params":{
         "pageOffset": 0,
         "pageSize": 5,
         "finished": false,
         "all": true
     }
 }
+Feedback,
+{
+    "id": 501,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "QueryInTask",
+        "data": {
+            "pageOffset": 0,
+            "pageSize": 5,
+            "total": 1,
+            "finished": false,
+            "all": true,
+            "data": [
+                {
+                    "finished": false,
+                    "block": 1,
+                    "txIndex": 0,
+                    "address": "0xasf",
+                    "pubKey": "xsdfdf",
+                    "hashId": "asdfsdafasdf"
+                }
+            ]
+        }
+    }
+}
+
 {
     "id":502,
     "name":"QueryInTask",
@@ -244,8 +372,9 @@ An error occurred on the server while parsing the JSON text.
 ````json
 {
     "id":601,
-    "name":"QueryOutTask",
-    "data":{
+    "jsonrpc": "2.0",
+    "method":"QueryOutTask",
+    "params":{
         "pageOffset": 0,
         "pageSize": 10,
         "finished": false,
@@ -253,7 +382,34 @@ An error occurred on the server while parsing the JSON text.
     }
 }
 
-
+Feedback,
+{
+    "id": 601,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "QueryOutTask",
+        "data": {
+            "pageOffset": 0,
+            "pageSize": 10,
+            "total": 1,
+            "finished": false,
+            "all": true,
+            "data": [
+                {
+                    "finished": false,
+                    "block": 1,
+                    "txIndex": 0,
+                    "address": "0xasf",
+                    "pubKey": "xsdfdf",
+                    "status": "succeed",
+                    "encryptSecret": "asdfsdafasdf",
+                    "oldHashId": "xxx",
+                    "newHashId": "yyy"
+                }
+            ]
+        }
+    }
+}
 ```json
 
 ## MaskInTask
@@ -261,10 +417,20 @@ An error occurred on the server while parsing the JSON text.
 
 {
     "id":332,
-    "name":"MarkInTask",
-    "data":{
-        "block": 9,
+    "jsonrpc": "2.0",
+    "method":"MarkInTask",
+    "params":{
+        "block": 1,
         "txIndex": 0
+    }
+}
+Feedback,
+{
+    "id": 332,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "MarkInTask",
+        "data": []
     }
 }
 ````
@@ -274,10 +440,20 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id": 312,
-    "name": "MarkOutTask",
-    "data": {
-        "block": 5,
+    "jsonrpc": "2.0",
+    "method": "MarkOutTask",
+    "params": {
+        "block": 1,
         "txIndex": 0
+    }
+}
+Feedback,
+{
+    "id": 312,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "MarkOutTask",
+        "data": []
     }
 }
 ```
@@ -287,9 +463,10 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id": 712,
-    "name": "GetCertainInTask",
-    "data": {
-        "block": 8,
+    "jsonrpc": "2.0",
+    "method": "GetCertainInTask",
+    "params": {
+        "block": 1,
         "txIndex": 0
     }
 }
@@ -300,9 +477,9 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id": 712,
-    "name": "GetCertainOutTask",
-    "data": {
-        "block": 2,
+    "method": "GetCertainOutTask",
+    "params": {
+        "block": 1,
         "txIndex": 0
     }
 }
@@ -313,16 +490,35 @@ An error occurred on the server while parsing the JSON text.
 ```json
 {
     "id":812,
-    "name":"DeleteAllInTask",
-    "data":{}
+    "jsonrpc": "2.0",
+    "method":"DeleteAllInTask",
+    "params":{}
+}
+Feedback
+{
+    "id": 812,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "DeleteAllInTask",
+        "data": []
+    }
 }
 
 {
     "id":813,
-    "name":"DeleteAllOutTask",
-    "data":{}
+    "jsonrpc": "2.0",
+    "method":"DeleteAllOutTask",
+    "params":{}
 }
-
+Feedback
+{
+    "id": 813,
+    "jsonrpc": "2.0",
+    "result": {
+        "name": "DeleteAllOutTask",
+        "data": []
+    }
+}
 ```
 
 ## Cats
