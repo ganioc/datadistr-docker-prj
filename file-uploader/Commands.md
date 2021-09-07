@@ -347,3 +347,16 @@ Feedback
     }
 }
 ```
+
+## getRecordCopy
+
+```json
+{
+    "id": 207,
+    "name": "getRecordCopy",
+    "data": {
+        "hashId": "QmZCAtvcamEAqTicFJvYGShN1ebTVfeHaogmzKFKCTntZD",
+        "groupId": 0
+    }
+}
+```
