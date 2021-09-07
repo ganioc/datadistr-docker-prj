@@ -1,58 +1,72 @@
-version: "2.4"  # optional since v1.27.0
+version: "2.4" # optional since v1.27.0
 services:
-  taskeeper:
-    image: registry.ruffcorp.com/pub/task-keeper:0.1.0
-    container_name: 'taskeeper'
-    restart: always
-    depends_on: 
-      - 'mongo'
-    env_file:
-      - .env
-    environment: 
-      SERVICE_PORT: 3000
-      HOST: "${taskeeper_host}"
-      PORT: "${taskeeper_port}"
-      USERNAME: "${mongo_root_name}"
-      PASSWORD: "${mango_root_password}"
-    ports:
-      - '3000:3000'
-    expose: 
-      - '3000'
-  postgres:
-    image: postgres
-    container_name: 'postgres'
-    restart: always
-    env_file:
-      - .env
-    environment:
-      POSTGRES_DB: "${mysql_db_name}"
-      POSTGRES_USER: "${mysql_user_name}"
-      POSTGRES_PASSWORD: "${mysql_password}"
-    ports:
-      - '5432:5432'
-    expose:
-      - '5432'
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-  mongo:
-    image: mongo:3.6
-    container_name : 'mongodb'
-    restart: always
-    env_file:
-      - .env
-    environment:
-      MONGO_INITDB_DATABASE: mongodb
-      MONGO_INITDB_ROOT_USERNAME: john
-      MONGO_INITDB_ROOT_PASSWORD: dianke123
-    ports:
-      - '27017-27019:27017-27019'
-    expose:
-      - '27017-27019'
-    volumes:
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-      - ./data/mongo:/data/db      
-
-
-
-
-  
+    taskeeper:
+        image: registry.ruffcorp.com/pub/task-keeper:0.1.0
+        container_name: "taskeeper"
+        restart: always
+        depends_on:
+            - "mongo"
+        env_file:
+            - .env
+        environment:
+            SERVICE_PORT: 3000
+            HOST: "${taskeeper_host}"
+            PORT: "${taskeeper_port}"
+            USERNAME: "${mongo_root_name}"
+            PASSWORD: "${mango_root_password}"
+        ports:
+            - "3000:3000"
+        expose:
+            - "3000"
+    fileloader:
+        image: registry.ruffcorp.com/pub/file-uploader:0.1.0
+        container_name: "fileloader"
+        restart: always
+        depends_on:
+            - "postgres"
+        env_file:
+            - .env
+        environment:
+            SERVICE_PORT: 3001
+            HOST: "${fileloader_host}"
+            PORT: "${fileloader_port}"
+            DBNAME: "${fileloader_db_name}"
+            USERNAME: "${fileloader_root_name}"
+            PASSWORD: "${fileloader_root_password}"
+        ports:
+            - "3000:3000"
+        expose:
+            - "3000"
+    postgres:
+        image: postgres
+        container_name: "postgres"
+        restart: always
+        env_file:
+            - .env
+        environment:
+            POSTGRES_DB: "${mysql_db_name}"
+            POSTGRES_USER: "${mysql_user_name}"
+            POSTGRES_PASSWORD: "${mysql_password}"
+        ports:
+            - "5432:5432"
+        expose:
+            - "5432"
+        volumes:
+            - ./data/postgres:/var/lib/postgresql/data
+    mongo:
+        image: mongo:3.6
+        container_name: "mongodb"
+        restart: always
+        env_file:
+            - .env
+        environment:
+            MONGO_INITDB_DATABASE: mongodb
+            MONGO_INITDB_ROOT_USERNAME: john
+            MONGO_INITDB_ROOT_PASSWORD: dianke123
+        ports:
+            - "27017-27019:27017-27019"
+        expose:
+            - "27017-27019"
+        volumes:
+            - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+            - ./data/mongo:/data/db
