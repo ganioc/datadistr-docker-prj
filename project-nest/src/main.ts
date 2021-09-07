@@ -1,5 +1,5 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
 
 const SERVICE_PORT = process.env.SERVICE_PORT
     ? parseInt(process.env.SERVICE_PORT)
