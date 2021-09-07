@@ -34,9 +34,9 @@ services:
             USERNAME: "${fileloader_root_name}"
             PASSWORD: "${fileloader_root_password}"
         ports:
-            - "3000:3000"
+            - "3001:3001"
         expose:
-            - "3000"
+            - "3001"
     postgres:
         image: postgres
         container_name: "postgres"
