@@ -19,7 +19,7 @@ services:
         expose:
             - "3000"
     fileloader:
-        image: registry.ruffcorp.com/pub/file-uploader:0.1.0
+        image: registry.ruffcorp.com/pub/file-uploader:0.1.1
         container_name: "fileloader"
         restart: always
         depends_on:
@@ -30,9 +30,9 @@ services:
             SERVICE_PORT: 3001
             HOST: "${fileloader_host}"
             PORT: "${fileloader_port}"
-            DBNAME: "${fileloader_db_name}"
-            USERNAME: "${fileloader_root_name}"
-            PASSWORD: "${fileloader_root_password}"
+            DBNAME: "db"
+            USERNAME: "john"
+            PASSWORD: "dianke123"
         ports:
             - "3001:3001"
         expose:
