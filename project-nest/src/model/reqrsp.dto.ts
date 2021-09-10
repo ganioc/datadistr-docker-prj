@@ -14,6 +14,16 @@ export class GetTask {
     block: number;
     txIndex: number;
 }
+export class GetState {
+    id: number;
+}
+
+export class SetState {
+    id: number;
+    latestBlock: number;
+
+    latestTxIndex: number;
+}
 
 export class QueryInTask {
     pageOffset: number;
@@ -43,6 +53,11 @@ export class QueryOutTaskRsp {
     finished: boolean;
     all: boolean;
     data: OutTask[];
+}
+export class QueryStateRsp {
+    id: number;
+    latestBlock: number;
+    latestTxIndex: number;
 }
 export class InTask {
     finished: boolean;
@@ -77,7 +92,9 @@ export class RpcReq {
         | MarkOutTask
         | QueryInTask
         | QueryOutTask
-        | GetTask;
+        | GetTask
+        | GetState
+        | SetState;
 }
 
 export class RpcRsp {
@@ -85,7 +102,12 @@ export class RpcRsp {
     jsonrpc: "2.0";
     result: {
         name: TaskType;
-        data: InTask[] | OutTask[] | QueryInTaskRsp | QueryOutTaskRsp;
+        data:
+        | InTask[]
+        | OutTask[]
+        | QueryInTaskRsp
+        | QueryOutTaskRsp
+        | QueryStateRsp;
     };
 }
 export class RpcRspErr {

@@ -10,6 +10,8 @@ export type TaskType =
     | "GetCertainInTask"
     | "GetCertainOutTask"
     | "DeleteAllInTask"
-    | "DeleteAllOutTask";
+    | "DeleteAllOutTask"
+    | "GetState"
+    | "SetState";
 
 export type StatusOutTask = 0 | 1;

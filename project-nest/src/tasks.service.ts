@@ -1,8 +1,11 @@
 import { Injectable } from "@nestjs/common";
+import { stat } from "fs";
 import { Connection, MongoRepository } from "typeorm";
 import { InTaskModel } from "./entity/InTaskModel";
 import { OutTaskModel } from "./entity/OutTaskModel";
+import { StateModel } from "./entity/StateModel";
 import {
+    GetState,
     GetTask,
     InTask,
     MarkInTask,
@@ -14,6 +17,7 @@ import {
     RpcRsp,
     RpcRspErr,
     RpcStatusCode,
+    SetState,
     transInTaskModel,
     transOutTaskModel,
 } from "./model/reqrsp.dto";
@@ -22,12 +26,15 @@ import {
 export class TasksService {
     private inTaskModelRepository: MongoRepository<InTaskModel>;
     private outTaskModelRepository: MongoRepository<OutTaskModel>;
+    private stateModelRepository: MongoRepository<StateModel>;
 
     constructor(private readonly connection: Connection) {
         this.inTaskModelRepository =
             this.connection.getMongoRepository(InTaskModel);
         this.outTaskModelRepository =
             this.connection.getMongoRepository(OutTaskModel);
+        this.stateModelRepository =
+            this.connection.getMongoRepository(StateModel);
     }
 
     findAll(
@@ -335,9 +342,44 @@ export class TasksService {
         await this.inTaskModelRepository.deleteMany({});
         return this.makeRspV2(req, []);
     }
-    async handleDeleteAllOutTask(req: RpcReq): Promise<RpcRsp> {
+    async handleDeleteAllOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
         await this.outTaskModelRepository.deleteMany({});
         return this.makeRspV2(req, []);
+    }
+    async handleGetState(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as GetState;
+
+        const result = await this.stateModelRepository.findOne({
+            index: data.id,
+        });
+        console.log(result);
+
+        if (result) {
+            return this.makeRspV2(req, result);
+        } else {
+            return this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Empty", [data]);
+        }
+    }
+    async handleSetState(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as SetState;
+
+        const state = new StateModel();
+        state.index = data.id;
+        state.latestBlock = data.latestBlock;
+        state.latestTxIndex = data.latestTxIndex;
+
+        const result = await this.stateModelRepository.save(state);
+
+        if (result.id !== undefined) {
+            return this.makeRspV2(req, []);
+        } else {
+            return this.makeRspErrV2(
+                req,
+                RpcStatusCode.DB_FAIL,
+                "Save db fail",
+                [],
+            );
+        }
     }
     async apiRpcV1(req: RpcReq): Promise<RpcRsp | RpcRspErr | null> {
         // console.log('id:', req.id);
@@ -381,6 +423,12 @@ export class TasksService {
                 break;
             case "DeleteAllOutTask":
                 return this.handleDeleteAllOutTask(req);
+                break;
+            case "GetState":
+                return this.handleGetState(req);
+                break;
+            case "SetState":
+                return this.handleSetState(req);
                 break;
             default:
                 break;

@@ -585,3 +585,29 @@ Feedback
         ]
 
 ```
+
+## getState
+
+```json
+{
+    "id": 912,
+    "jsonrpc": "2.0",
+    "method": "GetState",
+    "params": {"id": 0}
+}
+```
+
+## setState
+
+```json
+{
+    "id": 913,
+    "jsonrpc": "2.0",
+    "method": "SetState",
+    "params": {
+        "id": 0,
+        "latestBlock": 100,
+        "latestTxIndex": 0
+    }
+}
+```
