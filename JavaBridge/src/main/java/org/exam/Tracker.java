@@ -4,6 +4,7 @@ import com.thetransactioncompany.jsonrpc2.JSONRPC2Request;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
 import com.thetransactioncompany.jsonrpc2.client.JSONRPC2Session;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class Tracker {
     private static String HOST;
     private static int PORT;
     private static String URL;
+    private static JsonRpc jsonRpc;
 
     public static void main(String[] args) {
         System.out.println("Hello");
@@ -25,7 +27,15 @@ public class Tracker {
 
         System.out.printf("Host: %s\nPort: %s\nUrl: %s\n", HOST, String.valueOf(PORT), URL);
 
-        MonitorTask task = new MonitorTask();
+        try {
+            jsonRpc = new JsonRpc(HOST, PORT, URL);
+        } catch (MalformedURLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        MonitorTask task = new MonitorTask(jsonRpc);
         task.start();
     }
 }

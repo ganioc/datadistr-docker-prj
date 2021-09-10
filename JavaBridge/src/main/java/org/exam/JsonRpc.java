@@ -33,7 +33,7 @@ public class JsonRpc {
         urlTemp.append(host);
         urlTemp.append(":").append(port).append(url);
 
-        java.net.URL serverURL = new URL(url.toString());
+        java.net.URL serverURL = new URL(urlTemp.toString());
         System.out.println("URL:" + serverURL.toString());
 
         this.mSession = new JSONRPC2Session(serverURL);
@@ -74,5 +74,17 @@ public class JsonRpc {
 //            System.out.println(response.getError().getMessage());
 
         return response;
+    }
+    public  JSONRPC2Response getState() throws JSONRPC2ParseException, JSONRPC2SessionException {
+        String method = "GetState";
+        Map<String,Object> params = new HashMap<String,Object>();
+        params.put("id", 0);
+
+        String id = "req" + getId();
+        JSONRPC2Request reqOut = new JSONRPC2Request(method, params, id);
+        String jsonString = reqOut.toString();
+        JSONRPC2Request reqIn = JSONRPC2Request.parse(jsonString);
+
+        return this.mSession.send(reqIn);
     }
 }
