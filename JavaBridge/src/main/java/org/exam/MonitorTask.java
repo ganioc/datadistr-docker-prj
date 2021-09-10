@@ -7,8 +7,6 @@ public class MonitorTask {
 
     public MonitorTask(JsonRpc jsonRpc) {
 
-
-
         this.task = new Thread(new Runnable() {
             @Override
             public void run() {

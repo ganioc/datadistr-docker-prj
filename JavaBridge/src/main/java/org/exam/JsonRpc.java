@@ -24,6 +24,7 @@ public class JsonRpc {
     }
 
     public JsonRpc( String host, int port, String url) throws MalformedURLException {
+        System.out.println("JsonRpc constructor()");
         this.mHost = host;
         this.mPort = port;
         this.mUrl = url;
