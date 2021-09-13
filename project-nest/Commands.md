@@ -467,7 +467,9 @@ Feedback,
     "method": "GetCertainInTask",
     "params": {
         "block": 1,
-        "txIndex": 0
+        "txIndex": 0,
+        "address": "",
+        "hashId": ""
     }
 }
 ```
@@ -480,7 +482,9 @@ Feedback,
     "method": "GetCertainOutTask",
     "params": {
         "block": 1,
-        "txIndex": 0
+        "txIndex": 0,
+        "address": "",
+        "hashId": ""
     }
 }
 ```

@@ -314,8 +314,8 @@ export class TasksService {
         const data = req.params as GetTask;
 
         const result = await this.inTaskModelRepository.findOne({
-            block: data.block,
-            txIndex: data.txIndex,
+            address: data.address,
+            hashId: data.hashId,
         });
         console.log(result);
         if (result) {
@@ -328,8 +328,8 @@ export class TasksService {
         const data = req.params as GetTask;
 
         const result = await this.outTaskModelRepository.findOne({
-            block: data.block,
-            txIndex: data.txIndex,
+            address: data.address,
+            oldHashId: data.hashId,
         });
         console.log(result);
         if (result) {

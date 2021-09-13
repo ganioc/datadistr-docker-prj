@@ -2,8 +2,7 @@ import {
     Column,
     Entity,
     Index,
-    ObjectIdColumn,
-    PrimaryGeneratedColumn,
+    ObjectIdColumn
 } from 'typeorm';
 import 'reflect-metadata';
 

@@ -1,6 +1,6 @@
 import { InTaskModel } from "src/entity/InTaskModel";
-import { OutTaskModel } from 'src/entity/OutTaskModel';
-import { StatusOutTask, TaskType } from './type';
+import { OutTaskModel } from "src/entity/OutTaskModel";
+import { StatusOutTask, TaskType } from "./type";
 
 export class MarkInTask {
     block: number;
@@ -13,6 +13,8 @@ export class MarkOutTask {
 export class GetTask {
     block: number;
     txIndex: number;
+    hashId: string;
+    address: string;
 }
 export class GetState {
     id: number;
