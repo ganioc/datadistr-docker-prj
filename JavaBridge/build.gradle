@@ -1,8 +1,15 @@
 plugins {
     id 'java'
+    id 'application'
 }
-
-group 'org.example'
+application{
+    mainClassName="org.exam.Tracker"
+//    into(project.name) {
+//        from '.'
+//        include 'conf/*'
+//    }
+}
+group 'org.exam'
 version '1.0-SNAPSHOT'
 
 java{
@@ -38,8 +45,10 @@ dependencies {
     compile ('org.slf4j:slf4j-log4j12:1.7.25')
     compile ('com.github.pcj:google-options:1.0.0')
 
+    // compile ('com.github.celeduc:java-ipfs-api:v1.0.0-PRE')
     compile ('com.github.ipfs:java-ipfs-http-client:v1.3.3')
 
+//    runtime files('src/main/resources')
 }
 
 test {
@@ -47,12 +56,28 @@ test {
 }
 
 jar {
+    destinationDir file('build/')
     manifest {
         attributes(
                 'Main-Class': 'org.exam.Tracker'
         )
     }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     exclude 'META-INF/*.RSA'
     exclude 'META-INF/*.SF'
     exclude 'META-INF/*.DSA'
+
+    doLast {
+        copy {
+            from file('src/main/resources/')
+            into 'build/'
+        }
+    }
+}
+
+
+processResources{
+
 }

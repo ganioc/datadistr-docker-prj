@@ -68,7 +68,7 @@ public class Tracker {
         }
 
         MonitorTask task = new MonitorTask(jsonRpc);
-//        task.start();
+        task.start();
 
         ContractHook hook = new ContractHook(DEFAULT_START_BLOCK, CONTRACT_ADDRESS);
         hook.start();
