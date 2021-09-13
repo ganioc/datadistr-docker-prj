@@ -4,10 +4,6 @@ plugins {
 }
 application{
     mainClassName="org.exam.Tracker"
-//    into(project.name) {
-//        from '.'
-//        include 'conf/*'
-//    }
 }
 group 'org.exam'
 version '1.0-SNAPSHOT'
@@ -56,7 +52,7 @@ test {
 }
 
 jar {
-    destinationDir file('build/')
+    destinationDir file('build/apps/')
     manifest {
         attributes(
                 'Main-Class': 'org.exam.Tracker'
@@ -72,7 +68,7 @@ jar {
     doLast {
         copy {
             from file('src/main/resources/')
-            into 'build/'
+            into 'build/apps'
         }
     }
 }
