@@ -1,7 +1,7 @@
 version: "2.4" # optional since v1.27.0
 services:
     taskeeper:
-        image: registry.ruffcorp.com/pub/task-keeper:0.1.2
+        image: registry.ruffcorp.com/pub/task-keeper:0.1.3
         container_name: "taskeeper"
         restart: always
         depends_on:
