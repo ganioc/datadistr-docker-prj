@@ -177,6 +177,33 @@ Feedback,
                 "newHashId": "yyy"
             }
 }
+// Manually InsertOutTask,
+{
+    "id":332,
+    "jsonrpc": "2.0",
+    "method":"InsertOutTask",
+    "params":{
+                "finished": false,
+                "block": 1032,
+                "txIndex": 0,
+                "address": "0x60079bb72b53e55fd411d93cfa32e7fca0cd28a4",
+                "pubKey": "044513fe5bea614f8dabc7ba6156a507df867277c58415d4422e5b423568e734bd83ad2e6999ef0c9979016bd2cddaf20199ce0f8e1260bf76a73e8d0756b37f28",
+                "status": 0,
+                "encryptSecret": "asdfsdafasdf",
+                "oldHashId": "Qm1234567890",
+                "newHashId": "Qm1234567890asdasd"
+            }
+}
+// InTask
+{
+                    "finished": false,
+                    "block": 1032,
+                    "txIndex": 0,
+                    "address": "0x60079bb72b53e55fd411d93cfa32e7fca0cd28a4",
+                    "pubKey": "044513fe5bea614f8dabc7ba6156a507df867277c58415d4422e5b423568e734bd83ad2e6999ef0c9979016bd2cddaf20199ce0f8e1260bf76a73e8d0756b37f28",
+                    "hashId": "Qm1234567890"
+                }
+
 Feedback,
 {
     "id": 332,
@@ -421,7 +448,9 @@ Feedback,
     "method":"MarkInTask",
     "params":{
         "block": 1,
-        "txIndex": 0
+        "txIndex": 0,
+        "address": "",
+        "hashId": ""
     }
 }
 Feedback,
@@ -444,7 +473,9 @@ Feedback,
     "method": "MarkOutTask",
     "params": {
         "block": 1,
-        "txIndex": 0
+        "txIndex": 0,
+        "address": "",
+        "hashId": ""
     }
 }
 Feedback,

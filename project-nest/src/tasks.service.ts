@@ -289,8 +289,8 @@ export class TasksService {
 
         const result = await this.inTaskModelRepository.findOneAndUpdate(
             {
-                block: data.block,
-                txIndex: data.txIndex,
+                address: data.address,
+                hashId: data.hashId,
             },
             { $set: { finished: true } },
         );
@@ -302,8 +302,8 @@ export class TasksService {
 
         const result = await this.outTaskModelRepository.findOneAndUpdate(
             {
-                block: data.block,
-                txIndex: data.txIndex,
+                address: data.address,
+                hashId: data.hashId,
             },
             { $set: { finished: true } },
         );

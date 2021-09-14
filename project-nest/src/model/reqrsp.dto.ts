@@ -5,10 +5,14 @@ import { StatusOutTask, TaskType } from "./type";
 export class MarkInTask {
     block: number;
     txIndex: number;
+    address: string;
+    hashId: string;
 }
 export class MarkOutTask {
     block: number;
     txIndex: number;
+    address: string;
+    hashId: string;
 }
 export class GetTask {
     block: number;
