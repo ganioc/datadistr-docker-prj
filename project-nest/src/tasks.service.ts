@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { stat } from "fs";
+import { stat, symlinkSync } from "fs";
+import { STATUS_CODES } from "http";
 import { Connection, MongoRepository } from "typeorm";
 import { InTaskModel } from "./entity/InTaskModel";
 import { OutTaskModel } from "./entity/OutTaskModel";
@@ -52,19 +53,35 @@ export class TasksService {
     // findAllOutTaskModel(): Promise<OutTaskModel[]> {
     //     return this.outTaskModelRepository.find();
     // }
-    async exist(
-        repos: MongoRepository<InTaskModel> | MongoRepository<OutTaskModel>,
-        block: number,
-        txIndex: number,
+    // async exist(
+    //     repos: MongoRepository<InTaskModel> | MongoRepository<OutTaskModel>,
+    //     address: string,
+    //     hashId: string,
+    // ): Promise<boolean> {
+    // const result = await repos
+    //     .createQueryBuilder()
+    //     .where('block = :block', { block: `${block}` })
+    //     .andWhere('txIndex = :txIndex', { txIndex: `${txIndex}` })
+    //     .getOne();
+    //     const result = await repos.findOne({
+    //         address: address,
+    //         oldHashId: hashId,
+    //     });
+
+    //     if (result) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+    async existInTask(
+        repos: MongoRepository<InTaskModel>,
+        address: string,
+        hashId: string,
     ): Promise<boolean> {
-        // const result = await repos
-        //     .createQueryBuilder()
-        //     .where('block = :block', { block: `${block}` })
-        //     .andWhere('txIndex = :txIndex', { txIndex: `${txIndex}` })
-        //     .getOne();
         const result = await repos.findOne({
-            block: block,
-            txIndex: txIndex,
+            address: address,
+            hashId: hashId,
         });
 
         if (result) {
@@ -73,11 +90,21 @@ export class TasksService {
             return false;
         }
     }
-    async existInTask(block: number, txIndex: number): Promise<boolean> {
-        return this.exist(this.inTaskModelRepository, block, txIndex);
-    }
-    async existOutTask(block: number, txIndex: number): Promise<boolean> {
-        return this.exist(this.outTaskModelRepository, block, txIndex);
+    async existOutTask(
+        repos: MongoRepository<OutTaskModel>,
+        address: string,
+        hashId: string,
+    ): Promise<boolean> {
+        const result = await repos.findOne({
+            address: address,
+            oldHashId: hashId,
+        });
+
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
     }
     makeRspV2(req: RpcReq, data: any): RpcRsp {
         return {
@@ -120,31 +147,32 @@ export class TasksService {
         //     data: [],
         // };
     }
-    async handleGetInTask(req: RpcReq): Promise<RpcRsp> {
-        const result = await this.inTaskModelRepository.findOne({
-            finished: false,
-            order: { block: "ASC" },
-        });
-        console.log("handleGetInTask");
-        console.log(result);
+    async handleGetInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        try {
+            const result = await this.inTaskModelRepository.findOneOrFail({
+                finished: false,
+            });
+            console.log("handleGetInTask");
+            console.log(result);
 
-        return this.makeRspV2(
-            req,
-            result !== undefined ? [transInTaskModel(result)] : [],
-        );
+            return this.makeRspV2(req, [transInTaskModel(result)]);
+        } catch (e) {
+            console.log(e);
+            return this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Not found", []);
+        }
     }
-    async handleGetOutTask(req: RpcReq): Promise<RpcRsp> {
-        const result = await this.outTaskModelRepository.findOne({
-            finished: false,
-            order: { block: "ASC" },
-        });
-        console.log("handleGetOutTask");
-        console.log(result);
-
-        return this.makeRspV2(
-            req,
-            result !== undefined ? [transOutTaskModel(result)] : [],
-        );
+    async handleGetOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        try {
+            const result = await this.outTaskModelRepository.findOneOrFail({
+                finished: false,
+            });
+            console.log("handleGetOutTask");
+            console.log(result);
+            return this.makeRspV2(req, [transOutTaskModel(result)]);
+        } catch (e) {
+            console.log(e);
+            this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Not found.", []);
+        }
     }
     async handleQueryInTask(req: RpcReq): Promise<RpcRsp> {
         const data = req.params as QueryInTask;
@@ -223,7 +251,11 @@ export class TasksService {
         task.pubKey = data.pubKey;
         task.hashId = data.hashId;
 
-        const check = await this.existInTask(data.block, data.txIndex);
+        const check = await this.existInTask(
+            this.inTaskModelRepository,
+            data.address,
+            data.hashId,
+        );
 
         if (check) {
             return this.makeRspErrV2(
@@ -263,7 +295,11 @@ export class TasksService {
         task.oldHashId = data.oldHashId;
         task.newHashId = data.newHashId;
 
-        const check = await this.existOutTask(data.block, data.txIndex);
+        const check = await this.existOutTask(
+            this.outTaskModelRepository,
+            data.address,
+            data.oldHashId,
+        );
 
         if (check) {
             return this.makeRspErrV2(req, RpcStatusCode.EXIST, "Exist", [data]);
