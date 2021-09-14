@@ -79,14 +79,14 @@ export class TasksService {
         address: string,
         hashId: string,
     ): Promise<boolean> {
-        const result = await repos.findOne({
-            address: address,
-            hashId: hashId,
-        });
-
-        if (result) {
+        try {
+            const result = await repos.findOneOrFail({
+                address: address,
+                hashId: hashId,
+            });
+            console.log(result);
             return true;
-        } else {
+        } catch (e) {
             return false;
         }
     }
@@ -95,14 +95,14 @@ export class TasksService {
         address: string,
         hashId: string,
     ): Promise<boolean> {
-        const result = await repos.findOne({
-            address: address,
-            oldHashId: hashId,
-        });
-
-        if (result) {
+        try {
+            const result = await repos.findOneOrFail({
+                address: address,
+                oldHashId: hashId,
+            });
+            console.log(result);
             return true;
-        } else {
+        } catch (e) {
             return false;
         }
     }
