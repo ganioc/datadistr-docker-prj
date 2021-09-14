@@ -352,6 +352,32 @@ export class TasksService {
         console.log("result", result);
         return this.makeRspV2(req, []);
     }
+    async handleUnMarkInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as MarkInTask;
+
+        const result = await this.inTaskModelRepository.findOneAndUpdate(
+            {
+                address: data.address,
+                hashId: data.hashId,
+            },
+            { $set: { finished: false } },
+        );
+        console.log("result", result);
+        return this.makeRspV2(req, []);
+    }
+    async handleUnMarkOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as MarkOutTask;
+
+        const result = await this.outTaskModelRepository.findOneAndUpdate(
+            {
+                address: data.address,
+                oldHashId: data.hashId,
+            },
+            { $set: { finished: false } },
+        );
+        console.log("result", result);
+        return this.makeRspV2(req, []);
+    }
     async handleGetCertainInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
         const data = req.params as GetTask;
 
@@ -453,6 +479,12 @@ export class TasksService {
                 break;
             case "MarkOutTask":
                 return this.handleMarkOutTask(req);
+                break;
+            case "UnMarkInTask":
+                return this.handleUnMarkInTask(req);
+                break;
+            case "UnMarkOutTask":
+                return this.handleUnMarkOutTask(req);
                 break;
             case "GetCertainInTask":
                 return this.handleGetCertainInTask(req);

@@ -7,6 +7,8 @@ export type TaskType =
     | "InsertOutTask"
     | "MarkInTask"
     | "MarkOutTask"
+    | "UnMarkInTask"
+    | "UnMarkOutTask"
     | "GetCertainInTask"
     | "GetCertainOutTask"
     | "DeleteAllInTask"

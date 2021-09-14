@@ -14,6 +14,18 @@ export class MarkOutTask {
     address: string;
     hashId: string;
 }
+export class UnMarkInTask {
+    block: number;
+    txIndex: number;
+    address: string;
+    hashId: string;
+}
+export class UnMarkOutTask {
+    block: number;
+    txIndex: number;
+    address: string;
+    hashId: string;
+}
 export class GetTask {
     block: number;
     txIndex: number;
@@ -96,6 +108,8 @@ export class RpcReq {
         | OutTask
         | MarkInTask
         | MarkOutTask
+        | UnMarkInTask
+        | UnMarkOutTask
         | QueryInTask
         | QueryOutTask
         | GetTask

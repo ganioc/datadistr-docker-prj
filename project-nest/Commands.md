@@ -171,7 +171,7 @@ Feedback,
                 "txIndex": 0,
                 "address": "0xasf",
                 "pubKey": "xsdfdf",
-                "status": "succeed",
+                "status": 0,
                 "encryptSecret": "asdfsdafasdf",
                 "oldHashId": "xxx",
                 "newHashId": "yyy"
@@ -478,6 +478,29 @@ Feedback,
         "hashId": ""
     }
 }
+{
+    "id": 312,
+    "jsonrpc": "2.0",
+    "method": "MarkOutTask",
+    "params": {
+        "block": 1,
+        "txIndex": 0,
+        "address": "0xasf1111",
+        "hashId": "xxx1111"
+    }
+}
+{
+    "id": 312,
+    "jsonrpc": "2.0",
+    "method": "MarkOutTask",
+    "params": {
+        "block": 1,
+        "txIndex": 0,
+        "address": "0xasf",
+        "hashId": "xxx"
+    }
+}
+
 Feedback,
 {
     "id": 312,
@@ -538,6 +561,7 @@ Feedback
         "data": []
     }
 }
+
 
 {
     "id":813,
