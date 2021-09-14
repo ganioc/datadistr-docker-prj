@@ -172,7 +172,12 @@ export class TasksService {
             return this.makeRspV2(req, [transOutTaskModel(result)]);
         } catch (e) {
             console.log(e);
-            this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Not found.", []);
+            return this.makeRspErrV2(
+                req,
+                RpcStatusCode.EMPTY,
+                "Not found.",
+                [],
+            );
         }
     }
     async handleQueryInTask(req: RpcReq): Promise<RpcRsp> {
