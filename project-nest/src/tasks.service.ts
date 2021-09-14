@@ -303,7 +303,7 @@ export class TasksService {
         const result = await this.outTaskModelRepository.findOneAndUpdate(
             {
                 address: data.address,
-                hashId: data.hashId,
+                oldHashId: data.hashId,
             },
             { $set: { finished: true } },
         );

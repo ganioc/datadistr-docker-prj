@@ -1,9 +1,4 @@
-import {
-    Column,
-    Entity,
-    Index,
-    ObjectIdColumn
-} from 'typeorm';
+import { Column, Entity, Index, ObjectIdColumn } from "typeorm";
 import 'reflect-metadata';
 
 @Entity('intask')
