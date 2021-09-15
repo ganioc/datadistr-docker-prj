@@ -40,7 +40,7 @@ export class FileService {
         } catch (e) {
             console.log("New file")
         }
-
+        console.log("Path:", path.join('./upload', hashId))
         const writer = fs.createWriteStream(path.join('./upload', hashId), {
             flags: 'w',
         });
