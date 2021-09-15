@@ -315,7 +315,7 @@ by address
                 "id": 6,
                 "address": "0x60079bb72b53e55fd411d93cfa32e7fca0cd28a4",
                 "name": "Tao",
-                "orgization": "dianke",
+                "organization": "dianke",
                 "date": "2021-09-15T05:51:34.087Z",
                 "groups": []
             }
@@ -614,6 +614,15 @@ Feedback
                 "groupId": 0
             }
         ]
+    }
+}
+{
+    "id": 207,
+    "jsonrpc": "2.0",
+    "error": {
+        "code": 6,
+        "message": "Not found",
+        "data": []
     }
 }
 ```
