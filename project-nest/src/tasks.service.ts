@@ -21,6 +21,8 @@ import {
     SetState,
     transInTaskModel,
     transOutTaskModel,
+    UnMarkInTask,
+    UnMarkOutTask,
 } from "./model/reqrsp.dto";
 
 @Injectable()
@@ -353,7 +355,7 @@ export class TasksService {
         return this.makeRspV2(req, []);
     }
     async handleUnMarkInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
-        const data = req.params as MarkInTask;
+        const data = req.params as UnMarkInTask;
 
         const result = await this.inTaskModelRepository.findOneAndUpdate(
             {
@@ -366,7 +368,7 @@ export class TasksService {
         return this.makeRspV2(req, []);
     }
     async handleUnMarkOutTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
-        const data = req.params as MarkOutTask;
+        const data = req.params as UnMarkOutTask;
 
         const result = await this.outTaskModelRepository.findOneAndUpdate(
             {
@@ -376,6 +378,7 @@ export class TasksService {
             { $set: { finished: false } },
         );
         console.log("result", result);
+
         return this.makeRspV2(req, []);
     }
     async handleGetCertainInTask(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
