@@ -22,7 +22,7 @@ export class User {
 
     @Index()
     @Column()
-    orgization: string;
+    organization: string;
 
     @Index()
     @Column()

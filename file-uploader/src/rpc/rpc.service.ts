@@ -146,7 +146,7 @@ export class RpcService {
         const user = new User();
         user.address = data.address;
         user.name = data.name;
-        user.orgization = data.organization;
+        user.organization = data.organization;
         user.date = new Date();
         user.groups = [];
         try {
