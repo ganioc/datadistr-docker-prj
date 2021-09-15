@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { off } from 'process';
+import { retry } from 'rxjs';
 import { StatusCode } from 'src/app.utils';
 import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
-import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelRecordCopy, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetRecord, ReqGetRecordCopy, ReqGetRecordCopys, ReqGetRecords, ReqGetUser, ReqGetUsers, ReqInsertRecordCopy, RpcReq, RpcRsp, RpcRspData } from 'src/interface/interface';
+import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelRecordCopy, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetRecord, ReqGetRecordCopy, ReqGetRecordCopys, ReqGetRecords, ReqGetUser, ReqGetUsers, ReqInsertRecordCopy, RpcReq, RpcRsp, RpcRspData, RpcRspErr, RpcStatusCode, RspGroup } from 'src/interface/interface';
 import { Connection, createQueryBuilder, Repository } from 'typeorm';
 
 @Injectable()
@@ -21,26 +22,35 @@ export class RpcService {
         this.groupRepository = this.connection.getRepository(Group);
         this.userRepository = this.connection.getRepository(User);
     }
-    makeRpcRsp(req: RpcReq, code: StatusCode, data: RpcRspData): RpcRsp {
+    makeRpcRspV2(req: RpcReq, data: RpcRspData): RpcRsp {
         return {
             id: req.id,
-            name: req.name,
-            statusCode: code,
-            data: data
+            jsonrpc: "2.0",
+            result: {
+                name: req.method,
+                data: data
+            }
         }
     }
-    async handleAddGroup(req: RpcReq): Promise<RpcRsp> {
-        const group = new Group();
-        const data = req.data as ReqAddGroup;
+    makeRpcRspErrV2(req: RpcReq, code: RpcStatusCode, message: string, data: RpcRspData): RpcRspErr {
+        return {
+            id: req.id,
+            jsonrpc: "2.0",
+            error: {
+                code: code,
+                message: message,
+                data: data,
+            }
+        }
+    }
+    async handleAddGroup(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+
+        const data = req.params as ReqAddGroup;
 
         if (data.groupId <= DEFAULT_GROUP) {
-            return {
-                id: req.id,
-                name: req.name,
-                statusCode: StatusCode.WRONG_ARG,
-                data: []
-            };
+            return this.makeRpcRspErrV2(req, RpcStatusCode.WRONG_ARG, "Wrong groupId", []);
         }
+        const group = new Group();
         group.groupId = data.groupId;
         group.alias = data.alias;
         group.level = data.level;
@@ -49,32 +59,32 @@ export class RpcService {
         group.recordOrigs = [];
 
         const result = await this.groupRepository.manager.save(group);
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: StatusCode.OK,
-            data: [result]
+        if (result) {
+            console.log(result);
+            return this.makeRpcRspV2(req, [result as RspGroup]);
+        } else {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "Save DB fail", []);
         }
     }
-    async handleGetGroup(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetGroup;
+    async handleGetGroup(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetGroup;
         console.log('handleGetGroup')
         console.log(data)
-        const result = await this.groupRepository
-            .findOne({
-                groupId: data.groupId,
-            });
-        // console.log("result: ", result);
-
-        if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result])
-        } else {
-            return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
+        try {
+            const result = await this.groupRepository
+                .findOneOrFail({
+                    groupId: data.groupId,
+                });
+            console.log(result);
+            return this.makeRpcRspV2(req, [result as RspGroup])
+        } catch (e) {
+            console.log(e);
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Can not found", []);
         }
     }
     async handleGetGroups(req: RpcReq): Promise<RpcRsp> {
         console.log('handleGetGroups')
-        const data = req.data as ReqGetGroups;
+        const data = req.params as ReqGetGroups;
         const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
         const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
         const [result, num] = await this.groupRepository
@@ -83,7 +93,7 @@ export class RpcService {
             .skip(offset)
             .getManyAndCount();
         console.log(result);
-        return this.makeRpcRsp(req, StatusCode.OK, {
+        return this.makeRpcRspV2(req, {
             pageOffset: offset,
             pageSize: size,
             total: num,
@@ -92,7 +102,7 @@ export class RpcService {
     }
     async handleGetGroupUsers(req: RpcReq): Promise<RpcRsp> {
         console.log('handleGetGroupUsers')
-        const data = req.data as ReqGetGroupUsers;
+        const data = req.params as ReqGetGroupUsers;
 
         const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
         const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
@@ -106,33 +116,32 @@ export class RpcService {
 
         console.log(result);
 
-        return this.makeRpcRsp(req, StatusCode.OK, {
+        return this.makeRpcRspV2(req, {
             pageOffset: offset,
             pageSize: size,
             total: num,
             data: result
         })
     }
-    async handleDelGroup(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqDelGroup;
+    async handleDelGroup(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqDelGroup;
 
         if (data.groupId <= DEFAULT_GROUP) {
-            return {
-                id: req.id,
-                name: req.name,
-                statusCode: StatusCode.WRONG_ARG,
-                data: []
-            };
+            return this.makeRpcRspErrV2(req, RpcStatusCode.WRONG_ARG, "Wrong groupId", []);
         }
         const result = await this.groupRepository.delete({
             groupId: data.groupId
         });
         console.log(result);
-        return this.makeRpcRsp(req, StatusCode.OK, []);
-    }
-    async handleAddUser(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqAddUser;
 
+        if (result.affected > 0) {
+            return this.makeRpcRspV2(req, []);
+        } else {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "DB delete fail", []);
+        }
+    }
+    async handleAddUser(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqAddUser;
 
         const user = new User();
         user.address = data.address;
@@ -143,19 +152,19 @@ export class RpcService {
         try {
             const result = await this.userRepository.save(user);
             if (result) {
-                return this.makeRpcRsp(req, StatusCode.OK, [result])
+                return this.makeRpcRspV2(req, [result])
             }
         } catch (e) {
             console.log(e)
-            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+            return this.makeRpcRspErrV2(req, RpcStatusCode.FAIL, "DB save fail", [])
         }
-
     }
-    async handleGetUsers(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetUsers;
+    async handleGetUsers(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetUsers;
 
         const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
-        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 20;
+
         const [result, num] = await this.userRepository
             .createQueryBuilder()
             .limit(size)
@@ -163,55 +172,60 @@ export class RpcService {
             .getManyAndCount();
         console.log(result);
 
-        return this.makeRpcRsp(req, StatusCode.OK, {
-            pageOffset: offset,
-            pageSize: size,
-            total: num,
-            data: result
-        })
-
-    }
-    async handleGetUser(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetUser;
-        const result = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.groups', 'group')
-            .where("address = :address", { address: data.address })
-            .getOne()
-        if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result]);
+        if (num > 0) {
+            return this.makeRpcRspV2(req, {
+                pageOffset: offset,
+                pageSize: size,
+                total: num,
+                data: result
+            })
         } else {
-            return this.makeRpcRsp(req, StatusCode.UNKNOWN, []);
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found", []);
         }
     }
-    async handleDelUser(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqDelUser;
+    async handleGetUser(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetUser;
+        try {
+            const result = await this.userRepository
+                .createQueryBuilder('user')
+                .leftJoinAndSelect('user.groups', 'group')
+                .where("address = :address", { address: data.address })
+                .getOneOrFail();
+            return this.makeRpcRspV2(req, [result]);
+        } catch (e) {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found", [])
+        }
+    }
+    async handleDelUser(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqDelUser;
+
         const result = await this.userRepository.delete({ address: data.address })
         console.log(result)
         if (result.affected > 0) {
-            return this.makeRpcRsp(req, StatusCode.OK, []);
+            return this.makeRpcRspV2(req, [result]);
         } else {
-            return this.makeRpcRsp(req, StatusCode.UNKNOWN, []);
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "DB delete fail", []);
         }
     }
-    async handleAddUserToGroup(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqAddUserToGroup;
-
-        const user = await this.userRepository.findOne({ address: data.address });
-        if (!user) {
-            console.log("not found:", data.address)
-            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+    async handleAddUserToGroup(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqAddUserToGroup;
+        let user;
+        try {
+            user = await this.userRepository.findOneOrFail({ address: data.address });
+            console.log('user', user)
+        } catch (e) {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "User not found", [])
         }
-        console.log('user', user)
-        const group = await this.groupRepository
-            .createQueryBuilder('group')
-            .leftJoinAndSelect('group.users', 'user')
-            .where("group.groupId = :id", { id: data.groupId })
-            .getOne();
-        console.log('group:', group)
-        if (!group) {
-            console.log("not found:", data.groupId);
-            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+        let group;
+        try {
+            group = await this.groupRepository
+                .createQueryBuilder('group')
+                .leftJoinAndSelect('group.users', 'user')
+                .where("group.groupId = :id", { id: data.groupId })
+                .getOneOrFail();
+            console.log('group:', group)
+        } catch (e) {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Group not found", [])
         }
 
         // group.users.push(user);
@@ -224,7 +238,7 @@ export class RpcService {
         console.log('exist:', exist);
 
         if (exist.length > 0) {
-            return this.makeRpcRsp(req, StatusCode.EXIST, [])
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EXIST, "Already exists", [])
         }
 
         group.users.push(user);
@@ -232,45 +246,49 @@ export class RpcService {
         const result = await this.groupRepository.manager.save(group);
         console.log("result:", result);
         if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [])
+            return this.makeRpcRspV2(req, [])
         } else {
-            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "DB save group fail", [])
         }
     }
-    async handleDelUserFromGroup(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqDelUserFromGroup;
-        const user = await this.userRepository.findOne({ address: data.address });
-        if (!user) {
-            console.log("not found:", data.address)
-            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
-        }
-        const group = await this.groupRepository
-            .createQueryBuilder('group')
-            .leftJoinAndSelect('group.users', 'user')
-            .where("group.groupId = :id", { id: data.groupId })
-            .getOne();
+    async handleDelUserFromGroup(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqDelUserFromGroup;
 
-        if (!group) {
-            console.log("not found:", data.groupId);
-            return this.makeRpcRsp(req, StatusCode.WRONG_ARG, [])
+        let user;
+        try {
+            user = await this.userRepository.findOneOrFail({ address: data.address });
+        } catch (e) {
+            console.log("not found:", data.address);
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found user", [])
         }
-        group.users = group.users ? group.users : [];
+        let group;
+        try {
+            group = await this.groupRepository
+                .createQueryBuilder('group')
+                .leftJoinAndSelect('group.users', 'user')
+                .where("group.groupId = :id", { id: data.groupId })
+                .getOneOrFail();
+        } catch (e) {
+            console.log("not found:", data.groupId);
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found group", [])
+        }
+        (group as Group).users = group.users ? group.users : [];
         group.users = group.users.filter((item) => {
             user.address !== item.address
         })
         const result = await this.groupRepository.manager.save(group);
         if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result])
+            return this.makeRpcRspV2(req, [result])
         } else {
-            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "DB save group fail", [])
         }
 
     }
-    async handleGetRecords(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetRecords;
+    async handleGetRecords(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetRecords;
 
         const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
-        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 20;
 
         const [result, num] = await this.recordOrigRepository
             .createQueryBuilder()
@@ -279,34 +297,33 @@ export class RpcService {
             .getManyAndCount();
         console.log(result);
 
-        return this.makeRpcRsp(req, StatusCode.OK, {
+        return this.makeRpcRspV2(req, {
             pageOffset: offset,
             pageSize: size,
             total: num,
             data: result
         })
     }
-    async handleGetRecord(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetRecord;
+    async handleGetRecord(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetRecord;
 
-        const result = await this.recordOrigRepository
-            .createQueryBuilder('recordOrig')
-            .where("recordOrig.hashId = :hashId", { hashId: data.hashId })
-            .leftJoinAndSelect('recordOrig.groups', 'group')
-            .getOne();
-        console.log(result);
-        if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result])
-        } else {
-            return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
+        try {
+            const result = await this.recordOrigRepository
+                .createQueryBuilder('recordOrig')
+                .where("recordOrig.hashId = :hashId", { hashId: data.hashId })
+                .leftJoinAndSelect('recordOrig.groups', 'group')
+                .getOneOrFail();
+            console.log(result);
+            return this.makeRpcRspV2(req, [result])
+        } catch (e) {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found Record", [])
         }
-
     }
-    async handleGetRecordCopys(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetRecordCopys;
+    async handleGetRecordCopys(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetRecordCopys;
 
         const offset = data.pageOffset < 0 ? 0 : data.pageOffset;
-        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 10;
+        const size = data.pageSize > 0 && data.pageSize <= DEFAULT_PAGESIZE ? data.pageSize : 20;
 
         const [result, num] = await this.recordCopyRepository
             .createQueryBuilder()
@@ -315,31 +332,36 @@ export class RpcService {
             .getManyAndCount();
         console.log(result);
 
-        return this.makeRpcRsp(req, StatusCode.OK, {
-            pageOffset: offset,
-            pageSize: size,
-            total: num,
-            data: result
-        })
+        if (num > 0) {
+            return this.makeRpcRspV2(req, result)
+        } else {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found RecordCopy", [])
+        }
     }
-    async handleInsertRecordCopy(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqInsertRecordCopy;
+    async handleInsertRecordCopy(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqInsertRecordCopy;
 
-        const recordCopy = await this.recordCopyRepository
-            .findOne({
-                hashId: data.hashId,
-                groupId: data.groupId
-            })
-        if (recordCopy) {
-            return this.makeRpcRsp(req, StatusCode.EXIST, [])
+        try {
+            const recordCopy = await this.recordCopyRepository
+                .findOneOrFail({
+                    hashId: data.hashId,
+                    groupId: data.groupId
+                })
+            if (recordCopy) {
+                return this.makeRpcRspErrV2(req, RpcStatusCode.EXIST, "RecordCopy exist", [])
+            }
+        } catch (e) {
+            console.log("RecordCopy found")
         }
 
-        const result = await this.recordOrigRepository
-            .findOne({ hashId: data.hashId })
-
-        if (!result) {
-            return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
+        try {
+            const result = await this.recordOrigRepository
+                .findOneOrFail({ hashId: data.hashId })
+        } catch (e) {
+            console.log("recordOrig not found")
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "RecordOrig not found", [])
         }
+
         const copy = new RecordCopy();
         copy.hashId = data.hashId;
         copy.newFileName = data.newFileName;
@@ -350,109 +372,98 @@ export class RpcService {
 
         const result1 = await this.connection.manager.save(copy);
         if (result1) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result1])
+            return this.makeRpcRspV2(req, [result1])
         } else {
-            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "DB save RecordCopy fail", [])
         }
     }
-    async handleDelRecordCopy(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqDelRecordCopy;
+    async handleDelRecordCopy(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqDelRecordCopy;
 
         const result = await this.recordCopyRepository
             .delete({ hashId: data.hashId, groupId: data.groupId })
         console.log(result);
 
         if (result.affected > 0) {
-            return this.makeRpcRsp(req, StatusCode.OK, [])
+            return this.makeRpcRspV2(req, [result])
         } else {
-            return this.makeRpcRsp(req, StatusCode.FAIL, [])
+            return this.makeRpcRspErrV2(req, RpcStatusCode.DB_FAIL, "DB delete RecordCopy fail", [])
         }
     }
-    async handleGetRecordCopy(req: RpcReq): Promise<RpcRsp> {
-        const data = req.data as ReqGetRecordCopy;
+    async handleGetRecordCopy(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        const data = req.params as ReqGetRecordCopy;
 
-        const result = await this.recordCopyRepository
-            .findOne({ hashId: data.hashId, groupId: data.groupId })
-        console.log(result);
-
-        if (result) {
-            return this.makeRpcRsp(req, StatusCode.OK, [result])
-        } else {
-            return this.makeRpcRsp(req, StatusCode.UNKNOWN, [])
+        try {
+            const result = await this.recordCopyRepository
+                .findOneOrFail({ hashId: data.hashId, groupId: data.groupId })
+            console.log(result);
+            return this.makeRpcRspV2(req, [result])
+        } catch (e) {
+            return this.makeRpcRspErrV2(req, RpcStatusCode.EMPTY, "Not found", [])
         }
     }
-    async handleUnknownReq(req: RpcReq): Promise<RpcRsp> {
-        return {
-            id: req.id,
-            name: req.name,
-            statusCode: StatusCode.UNKNOWN,
-            data: [],
-        };
+    async handleUnknownReq(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        return this.makeRpcRspErrV2(req, RpcStatusCode.UNKNOWN, "method unknown", [])
     }
 
     // add all api handler here
-    async handle(req: RpcReq): Promise<RpcRsp> {
-        try {
-            switch (req.name) {
-                case "addGroup":
-                    return this.handleAddGroup(req);
-                    break;
-                case "getGroup":
-                    return this.handleGetGroup(req);
-                    break;
-                case "getGroups":
-                    return this.handleGetGroups(req);
-                    break;
-                case "getGroupUsers":
-                    return this.handleGetGroupUsers(req);
-                    break;
-                case "delGroup":
-                    return this.handleDelGroup(req);
-                    break;
-                case "addUser":
-                    return this.handleAddUser(req);
-                    break;
-                case "getUsers":
-                    return this.handleGetUsers(req);
-                    break;
-                case "getUser":
-                    return this.handleGetUser(req);
-                    break;
-                case "delUser":
-                    return this.handleDelUser(req);
-                    break;
-                case "addUserToGroup":
-                    return this.handleAddUserToGroup(req);
-                    break;
-                case "delUserFromGroup":
-                    return this.handleDelUserFromGroup(req);
-                    break;
-                case "getRecords":
-                    return this.handleGetRecords(req);
-                    break;
-                case "getRecord":
-                    return this.handleGetRecord(req);
-                    break;
-                case "getRecordCopys":
-                    return this.handleGetRecordCopys(req);
-                    break;
-                case "insertRecordCopy":
-                    return this.handleInsertRecordCopy(req);
-                    break;
-                case "delRecordCopy":
-                    return this.handleDelRecordCopy(req);
-                    break;
-                case "getRecordCopy":
-                    return this.handleGetRecordCopy(req);
-                    break;
-                default:
-                    break;
-            }
-            return this.handleUnknownReq(req);
-        } catch (e) {
-            console.log(e)
-            return this.makeRpcRsp(req, StatusCode.FAIL, [])
-        }
+    async handle(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
 
+        switch (req.method) {
+            case "addGroup":
+                return this.handleAddGroup(req);
+                break;
+            case "getGroup":
+                return this.handleGetGroup(req);
+                break;
+            case "getGroups":
+                return this.handleGetGroups(req);
+                break;
+            case "getGroupUsers":
+                return this.handleGetGroupUsers(req);
+                break;
+            case "delGroup":
+                return this.handleDelGroup(req);
+                break;
+            case "addUser":
+                return this.handleAddUser(req);
+                break;
+            case "getUsers":
+                return this.handleGetUsers(req);
+                break;
+            case "getUser":
+                return this.handleGetUser(req);
+                break;
+            case "delUser":
+                return this.handleDelUser(req);
+                break;
+            case "addUserToGroup":
+                return this.handleAddUserToGroup(req);
+                break;
+            case "delUserFromGroup":
+                return this.handleDelUserFromGroup(req);
+                break;
+            case "getRecords":
+                return this.handleGetRecords(req);
+                break;
+            case "getRecord":
+                return this.handleGetRecord(req);
+                break;
+            case "getRecordCopys":
+                return this.handleGetRecordCopys(req);
+                break;
+            case "insertRecordCopy":
+                return this.handleInsertRecordCopy(req);
+                break;
+            case "delRecordCopy":
+                return this.handleDelRecordCopy(req);
+                break;
+            case "getRecordCopy":
+                return this.handleGetRecordCopy(req);
+                break;
+            default:
+                return this.handleUnknownReq(req);
+                break;
+        }
     }
 }

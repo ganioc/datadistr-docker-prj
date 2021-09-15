@@ -12,5 +12,4 @@ export class RpcController {
         console.log(req);
         return this.rpcService.handle(req);
     }
-
 }

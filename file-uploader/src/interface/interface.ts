@@ -4,6 +4,7 @@ export type ReqType = "addGroup" | "getGroups" | "delGroup" | "getGroup" | "getG
 export type RspType = ReqType;
 export const DEFAULT_GROUP = 0;
 export const DEFAULT_PAGESIZE = 25;
+
 export class ReqAddGroup {
     groupId: number;
     alias: string;
@@ -76,8 +77,9 @@ export class ReqGetRecordCopy {
 }
 export class RpcReq {
     id: number;
-    name: ReqType;
-    data:
+    jsonrpc: "2.0";
+    method: ReqType;
+    params:
         | null
         | ReqAddGroup
         | ReqGetGroups
@@ -99,6 +101,9 @@ export class RpcReq {
         ;
 }
 export class RspGroup {
+    groupId: number;
+    alias: string;
+    level: number;
 
 }
 export class RspUser {
@@ -143,6 +148,7 @@ export class RspRecordCopyPagination {
 }
 export type RpcRspData =
     null
+    | []
     | RspGroup[]
     | RspUser[]
     | RspRecord[]
@@ -156,18 +162,27 @@ export type RpcRspData =
 
 export class RpcRsp {
     id: number;
-    name: RspType;
-    statusCode: number;
-    data:
-        RpcRspData;
-
+    jsonrpc: "2.0";
+    result: {
+        name: RspType;
+        data: RpcRspData;
+    }
 }
-
-
+export class RpcRspErr {
+    id: number;
+    jsonrpc: "2.0";
+    error: {
+        code: RpcStatusCode;
+        message: string;
+        data: RpcRspData;
+    }
+}
 export enum RpcStatusCode {
     OK = 0,
     UNKNOWN = 1,
     WRONG_ARG = 2,
     FAIL = 3,
     EXIST = 4,
+    DB_FAIL = 5,
+    EMPTY = 6,
 }
