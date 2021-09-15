@@ -274,7 +274,7 @@ export class RpcService {
         }
         (group as Group).users = group.users ? group.users : [];
         group.users = group.users.filter((item) => {
-            user.address !== item.address
+            return user.address !== item.address;
         })
         const result = await this.groupRepository.manager.save(group);
         if (result) {
