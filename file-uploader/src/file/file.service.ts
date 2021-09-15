@@ -29,14 +29,16 @@ export class FileService {
         console.log('hashId: ' + hashId);
 
         // save to local dir
-        const recordExist = await this.recordOrigRepository.findOne({
-            hashId: hashId,
-        });
-
-        if (recordExist) {
+        try {
+            const recordExist = await this.recordOrigRepository.findOneOrFail({
+                hashId: hashId,
+            });
             return {
                 statusCode: StatusCode.EXIST,
+                data: recordExist,
             };
+        } catch (e) {
+            console.log("New file")
         }
 
         const writer = fs.createWriteStream(path.join('./upload', hashId), {
@@ -58,6 +60,7 @@ export class FileService {
         record.fileName = name;
         record.hashId = hashId;
         record.type = 'normal';
+
         const group0 = await this.groupRepository.findOne({ groupId: 0 });
         record.groups = [group0];
 
