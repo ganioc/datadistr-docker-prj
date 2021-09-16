@@ -421,7 +421,7 @@ export class TasksService {
         const data = req.params as GetState;
 
         try {
-            const result = await this.stateModelRepository.findOne({
+            const result = await this.stateModelRepository.findOneOrFail({
                 index: data.id,
             });
             console.log(result);
