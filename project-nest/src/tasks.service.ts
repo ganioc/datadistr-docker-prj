@@ -413,10 +413,18 @@ export class TasksService {
         state.latestBlock = data.latestBlock;
         state.latestTxIndex = data.latestTxIndex;
 
-        const result = await this.stateModelRepository.save(state);
+        const result = await this.stateModelRepository.findOneAndUpdate(
+            { index: data.id },
+            {
+                $set: {
+                    latestBlock: data.latestBlock,
+                    latestTxIndex: data.latestTxIndex,
+                },
+            },
+        );
         console.log(result);
 
-        if (result.id !== undefined) {
+        if (result.ok == 1) {
             return this.makeRspV2(req, []);
         } else {
             return this.makeRspErrV2(
