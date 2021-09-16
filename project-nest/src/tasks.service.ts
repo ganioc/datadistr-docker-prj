@@ -128,7 +128,7 @@ export class TasksService {
 
             return this.makeRspV2(req, [transInTaskModel(result)]);
         } catch (e) {
-            console.log(e);
+            console.log("not found");
             return this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Not found", []);
         }
     }
@@ -141,7 +141,7 @@ export class TasksService {
             console.log(result);
             return this.makeRspV2(req, [transOutTaskModel(result)]);
         } catch (e) {
-            console.log(e);
+            console.log("Not found");
             return this.makeRspErrV2(
                 req,
                 RpcStatusCode.EMPTY,
@@ -405,6 +405,7 @@ export class TasksService {
         }
     }
     async handleSetState(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
+        console.log("setState");
         const data = req.params as SetState;
 
         const state = new StateModel();
@@ -413,6 +414,7 @@ export class TasksService {
         state.latestTxIndex = data.latestTxIndex;
 
         const result = await this.stateModelRepository.save(state);
+        console.log(result);
 
         if (result.id !== undefined) {
             return this.makeRspV2(req, []);
