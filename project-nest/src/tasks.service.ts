@@ -420,15 +420,19 @@ export class TasksService {
     async handleGetState(req: RpcReq): Promise<RpcRsp | RpcRspErr> {
         const data = req.params as GetState;
 
-        const result = await this.stateModelRepository.findOne({
-            index: data.id,
-        });
-        console.log(result);
-
-        if (result) {
-            return this.makeRspV2(req, result);
-        } else {
-            return this.makeRspErrV2(req, RpcStatusCode.EMPTY, "Empty", [data]);
+        try {
+            const result = await this.stateModelRepository.findOne({
+                index: data.id,
+            });
+            console.log(result);
+            return this.makeRspV2(req, [result]);
+        } catch (e) {
+            return this.makeRspErrV2(
+                req,
+                RpcStatusCode.EMPTY,
+                "Empty state",
+                [],
+            );
         }
     }
     async handleSetState(req: RpcReq): Promise<RpcRsp | RpcRspErr> {

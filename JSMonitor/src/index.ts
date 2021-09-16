@@ -34,16 +34,9 @@ console.log("=====================================")
 
 
 async function main() {
-    console.log('hello');
+    console.log('hello, JSMonitor ...');
 
     async function app() {
-
-        // let feedback = await axiosFile(F_URL, fileGetUser("0x60079bb72b53e55fd411d93cfa32e7fca0cd28a4"))
-
-        // if (feedback.result) {
-        //     let data = feedback.data as FileRpcRsp;
-        //     console.log(data.result.data)
-        // }
         console.log("\nCheck InTask ...")
         let inTask = await getOneInTask(T_URL);
 
