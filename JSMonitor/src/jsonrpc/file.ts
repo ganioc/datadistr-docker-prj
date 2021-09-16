@@ -27,3 +27,16 @@ export function fileGetRecordCopy(hashId: string, groupId: number): BasicJson {
     }
     return json;
 }
+
+export function fileInsertRecordCopy(hashId: string, groupId: number, newFileName: string, newHashId: string, secret: string): BasicJson {
+    let json = createBasicJson();
+    json.method = "insertRecordCopy";
+    json.params = {
+        hashId: hashId,
+        groupId: groupId,
+        newFileName: newFileName,
+        newHashId: newHashId,
+        secret: secret,
+    }
+    return json;
+}

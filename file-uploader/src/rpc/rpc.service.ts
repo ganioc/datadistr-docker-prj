@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { off } from 'process';
-import { retry } from 'rxjs';
-import { StatusCode } from 'src/app.utils';
 import { Group } from 'src/entity/Group';
 import { RecordCopy } from 'src/entity/RecordCopy';
 import { RecordOrig } from 'src/entity/RecordOrig';
 import { User } from 'src/entity/User';
 import { DEFAULT_GROUP, DEFAULT_PAGESIZE, ReqAddGroup, ReqAddUser, ReqAddUserToGroup, ReqDelGroup, ReqDelRecordCopy, ReqDelUser, ReqDelUserFromGroup, ReqGetGroup, ReqGetGroups, ReqGetGroupUsers, ReqGetRecord, ReqGetRecordCopy, ReqGetRecordCopys, ReqGetRecords, ReqGetUser, ReqGetUsers, ReqInsertRecordCopy, RpcReq, RpcRsp, RpcRspData, RpcRspErr, RpcStatusCode, RspGroup } from 'src/interface/interface';
-import { Connection, createQueryBuilder, Repository } from 'typeorm';
-
+import { Connection, Repository } from 'typeorm';
 @Injectable()
 export class RpcService {
     private recordOrigRepository: Repository<RecordOrig>;

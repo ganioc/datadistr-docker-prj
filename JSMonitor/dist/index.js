@@ -64,15 +64,10 @@ function main() {
     return __awaiter(this, void 0, void 0, function () {
         function app() {
             return __awaiter(this, void 0, void 0, function () {
-                var inTask, fileUser, userGroups, record, recordGroups, groupId;
+                var inTask, fileUser, userGroups, record, recordGroups, groupId, recordCopy;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            // let feedback = await axiosFile(F_URL, fileGetUser("0x60079bb72b53e55fd411d93cfa32e7fca0cd28a4"))
-                            // if (feedback.result) {
-                            //     let data = feedback.data as FileRpcRsp;
-                            //     console.log(data.result.data)
-                            // }
                             console.log("\nCheck InTask ...");
                             return [4 /*yield*/, (0, taskapi_1.getOneInTask)(T_URL)];
                         case 1:
@@ -132,11 +127,30 @@ function main() {
                         case 15:
                             console.log("user's groupId: ", groupId);
                             console.log("\ncheck recordCopy ...");
-                            return [4 /*yield*/, (0, utils_1.DelayMs)(LOOP_DELAY)];
+                            return [4 /*yield*/, (0, fileapi_1.getRecordCopyFile)(F_URL, inTask.hashId, groupId)];
                         case 16:
+                            recordCopy = _a.sent();
+                            if (!(recordCopy == null)) return [3 /*break*/, 18];
+                            console.log("Insert new recordCopy, according to inTask");
+                            return [4 /*yield*/, (0, fileapi_1.insertRecordCopyFile)(F_URL, inTask, record, groupId)];
+                        case 17:
+                            recordCopy = _a.sent();
+                            _a.label = 18;
+                        case 18:
+                            console.log("return recordCopy");
+                            console.log("\nCreate OutTask ...");
+                            console.log("\nCheck OutTask with address , hashId:");
+                            // insert new OutTask
+                            // update existed OutTask
+                            // Mark inTask finished=true
+                            return [4 /*yield*/, (0, utils_1.DelayMs)(LOOP_DELAY)];
+                        case 19:
+                            // insert new OutTask
+                            // update existed OutTask
+                            // Mark inTask finished=true
                             _a.sent();
                             return [4 /*yield*/, app()];
-                        case 17:
+                        case 20:
                             _a.sent();
                             return [2 /*return*/];
                     }
@@ -146,7 +160,7 @@ function main() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log('hello');
+                    console.log('hello, JSMonitor ...');
                     return [4 /*yield*/, app()];
                 case 1:
                     _a.sent();

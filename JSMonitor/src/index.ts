@@ -1,7 +1,7 @@
 
-import { getRecordCopyFile, getRecordFile, getUserFile } from "./api/fileapi";
+import { getRecordCopyFile, getRecordFile, getUserFile, insertRecordCopyFile } from "./api/fileapi";
 import { getOneInTask } from "./api/taskapi";
-import { RspGroup } from "./interface/file";
+import { ReqInsertRecordCopy, RspGroup } from "./interface/file";
 import { matchGroupId } from "./jsonrpc/generic";
 import { DelayMs } from "./utils";
 
@@ -86,20 +86,21 @@ async function main() {
         console.log("\ncheck recordCopy ...")
         let recordCopy = await getRecordCopyFile(F_URL, inTask.hashId, groupId);
 
-
-
         if (recordCopy == null) {
             console.log("Insert new recordCopy, according to inTask")
+            recordCopy = await insertRecordCopyFile(F_URL, inTask, record, groupId);
+
         }
         console.log("return recordCopy")
 
         console.log("\nCreate OutTask ...")
-
         console.log("\nCheck OutTask with address , hashId:")
 
         // insert new OutTask
 
         // update existed OutTask
+
+        // Mark inTask finished=true
 
         await DelayMs(LOOP_DELAY);
 
