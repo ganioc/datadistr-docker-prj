@@ -1,5 +1,20 @@
 version: "2.4" # optional since v1.27.0
 services:
+    jsmonitor:
+        image: registry.ruffcorp.com/pub/jsmonitor:0.1.0
+        container_name: "jsmonitor"
+        restart: always
+        depends_on:
+            - "mongo"
+            - "postgres"
+        env_fle:
+            - .env
+        environment:
+            LOOP_DELAY: 10000
+            TASK_HOST: "${task_host}"
+            FILE_HOST: "${file_host}"
+        volumes:
+            - ./data/upload:/app/upload/
     taskeeper:
         image: registry.ruffcorp.com/pub/task-keeper:0.1.3
         container_name: "taskeeper"
@@ -37,6 +52,8 @@ services:
             - "3001:3001"
         expose:
             - "3001"
+        volumes:
+            - ./data/upload:/app/upload/
     postgres:
         image: postgres
         container_name: "postgres"

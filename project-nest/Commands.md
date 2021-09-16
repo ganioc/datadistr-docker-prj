@@ -597,13 +597,6 @@ Feedback
 
 -   post /tasks/rpc/v1/
 
-```json
-{
-    "id": 31,
-    "name": "GetInTask",
-    "data": {}
-}
-```
 
 ## temp records
 

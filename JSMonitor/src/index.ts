@@ -1,7 +1,6 @@
-
 import { getRecordCopyFile, getRecordFile, getUserFile, insertRecordCopyFile } from "./api/fileapi";
-import { getOneInTask } from "./api/taskapi";
-import { ReqInsertRecordCopy, RspGroup } from "./interface/file";
+import { getCertainOutTask, getOneInTask, insertOutTask, markInTask } from "./api/taskapi";
+import { RspGroup } from "./interface/file";
 import { matchGroupId } from "./jsonrpc/generic";
 import { DelayMs } from "./utils";
 
@@ -29,10 +28,6 @@ console.log("T_URL:", T_URL);
 console.log("F_URL:", F_URL)
 console.log("=====================================")
 
-
-
-
-
 async function main() {
     console.log('hello, JSMonitor ...');
 
@@ -59,7 +54,7 @@ async function main() {
             await app();
             return;
         }
-        // console.log(fileUser.groups);
+
         let userGroups: RspGroup[] = fileUser.groups;
 
         console.log("\nCheck record's group")
@@ -92,15 +87,38 @@ async function main() {
 
         }
         console.log("return recordCopy")
-
-        console.log("\nCreate OutTask ...")
-        console.log("\nCheck OutTask with address , hashId:")
+        if (recordCopy === null) {
+            console.log("insertRecordCopy fail")
+            await DelayMs(LOOP_DELAY)
+            await app();
+            return;
+        }
 
         // insert new OutTask
+        // add outTask
+        // check outTask exist, block, 
+        console.log("\nCreate OutTask ...")
+        console.log("\nCheck OutTask with address , hashId:")
+        let block = inTask.block;
+        let txIndex = inTask.txIndex;
 
-        // update existed OutTask
+        let outTask = await getCertainOutTask(T_URL, block, txIndex, inTask.address, inTask.hashId);
+
+        let bInsert;
+        if (outTask === null) {
+            console.log("outTask not exists\n")
+            bInsert = await insertOutTask(T_URL, block, txIndex, inTask.address, inTask.hashId, inTask.pubKey, 0, recordCopy.secret, recordCopy.newHashId);
+        }
 
         // Mark inTask finished=true
+        if (outTask || bInsert) {
+            let bMark = await markInTask(T_URL, block, txIndex, inTask.address, inTask.hashId);
+            if (bMark) {
+                console.log("mark inTask OK")
+            } else {
+                console.log("mark inTask Fail")
+            }
+        }
 
         await DelayMs(LOOP_DELAY);
 

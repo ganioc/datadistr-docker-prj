@@ -64,7 +64,7 @@ function main() {
     return __awaiter(this, void 0, void 0, function () {
         function app() {
             return __awaiter(this, void 0, void 0, function () {
-                var inTask, fileUser, userGroups, record, recordGroups, groupId, recordCopy;
+                var inTask, fileUser, userGroups, record, recordGroups, groupId, recordCopy, block, txIndex, outTask, bInsert, bMark;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -138,19 +138,49 @@ function main() {
                             _a.label = 18;
                         case 18:
                             console.log("return recordCopy");
-                            console.log("\nCreate OutTask ...");
-                            console.log("\nCheck OutTask with address , hashId:");
-                            // insert new OutTask
-                            // update existed OutTask
-                            // Mark inTask finished=true
+                            if (!(recordCopy === null)) return [3 /*break*/, 21];
+                            console.log("insertRecordCopy fail");
                             return [4 /*yield*/, (0, utils_1.DelayMs)(LOOP_DELAY)];
                         case 19:
-                            // insert new OutTask
-                            // update existed OutTask
-                            // Mark inTask finished=true
                             _a.sent();
                             return [4 /*yield*/, app()];
                         case 20:
+                            _a.sent();
+                            return [2 /*return*/];
+                        case 21:
+                            // insert new OutTask
+                            // add outTask
+                            // check outTask exist, block, 
+                            console.log("\nCreate OutTask ...");
+                            console.log("\nCheck OutTask with address , hashId:");
+                            block = inTask.block;
+                            txIndex = inTask.txIndex;
+                            return [4 /*yield*/, (0, taskapi_1.getCertainOutTask)(T_URL, block, txIndex, inTask.address, inTask.hashId)];
+                        case 22:
+                            outTask = _a.sent();
+                            if (!(outTask === null)) return [3 /*break*/, 24];
+                            console.log("outTask not exists\n");
+                            return [4 /*yield*/, (0, taskapi_1.insertOutTask)(T_URL, block, txIndex, inTask.address, inTask.hashId, inTask.pubKey, 0, recordCopy.secret, recordCopy.newHashId)];
+                        case 23:
+                            bInsert = _a.sent();
+                            _a.label = 24;
+                        case 24:
+                            if (!(outTask || bInsert)) return [3 /*break*/, 26];
+                            return [4 /*yield*/, (0, taskapi_1.markInTask)(T_URL, block, txIndex, inTask.address, inTask.hashId)];
+                        case 25:
+                            bMark = _a.sent();
+                            if (bMark) {
+                                console.log("mark inTask OK");
+                            }
+                            else {
+                                console.log("mark inTask Fail");
+                            }
+                            _a.label = 26;
+                        case 26: return [4 /*yield*/, (0, utils_1.DelayMs)(LOOP_DELAY)];
+                        case 27:
+                            _a.sent();
+                            return [4 /*yield*/, app()];
+                        case 28:
                             _a.sent();
                             return [2 /*return*/];
                     }
