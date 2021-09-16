@@ -7,7 +7,7 @@ services:
         depends_on:
             - "mongo"
             - "postgres"
-        env_fle:
+        env_file:
             - .env
         environment:
             LOOP_DELAY: 10000
